@@ -41,12 +41,12 @@ namespace(:db) do
 
   desc "Drop databases"
   task(:drop) do
-    db_configuration.each { |env,config| system("mysqladmin --user=#{config["username"]} -f drop #{config["database"]}", out: $stdout, err: :out) }
+    db_configuration.each { |env,config| system("mysqladmin --user=#{config["username"]} -p#{config["password"]} -f drop #{config["database"]}", out: $stdout, err: :out) }
   end
 
   desc "Create databases"
   task(:create) do
-  	db_configuration.each { |env,config| system("mysql --user=#{config["username"]} -e 'create DATABASE #{config["database"]} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci '", out: $stdout, err: :out) }
+  	db_configuration.each { |env,config| system("mysql --user=#{config["username"]} -p#{config["password"]} -e 'create DATABASE #{config["database"]} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci '", out: $stdout, err: :out) }
   end
 
   desc("Check for pending migrations")
@@ -68,9 +68,6 @@ namespace(:db) do
     ENV["password"] ||= "my_temp_password"
     Rake::Task["db:abort_if_pending_migrations"].invoke
     Dir.glob("#{File.dirname(__FILE__)}/app/models/*.rb").each { |m| require m }
-    # Load factories
-    # FactoryGirl.definition_file_paths = ["#{File.dirname(__FILE__)}/spec/"]
-    # FactoryGirl.find_definitions
     FactoryGirl.reload
     FactoryGirl.create_list(:user, ENV["NUMB"].to_i, password: ENV["password"])
   end
