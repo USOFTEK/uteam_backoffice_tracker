@@ -41,10 +41,12 @@ class API < Grape::API
 	}
 
 	resource("/") do
-		namespace(:routes) do
-			desc("Load all availiable routes")
-			get("/") do
-				API.routes.map { |r| [r.route_method.downcase, r.route_path.gsub(/\(.*\)/, "")] if r.route_path && r.route_path.scan(/swagger/i).empty? }.compact
+		namespace(:api) do
+			namespace(:json_actions) do
+				desc("Load all availiable routes")
+				get("/") do
+					API.routes.map { |r| [r.route_method.downcase, r.route_path.gsub(/(\(.*\)|\/api)/, "")] if r.route_path && r.route_path.scan(/swagger/i).empty? }.compact
+				end
 			end
 
 		end
