@@ -65,13 +65,14 @@ namespace(:db) do
   desc("Load seeds")
   task(:seed => ["db:clean"]) do
     ENV["NUMB"] ||= 1.to_s
+    ENV["password"] ||= "my_temp_password"
     Rake::Task["db:abort_if_pending_migrations"].invoke
     Dir.glob("#{File.dirname(__FILE__)}/app/models/*.rb").each { |m| require m }
     # Load factories
     # FactoryGirl.definition_file_paths = ["#{File.dirname(__FILE__)}/spec/"]
     # FactoryGirl.find_definitions
     FactoryGirl.reload
-    FactoryGirl.create_list(:user, ENV["NUMB"].to_i)
+    FactoryGirl.create_list(:user, ENV["NUMB"].to_i, password: ENV["password"])
   end
 
 end

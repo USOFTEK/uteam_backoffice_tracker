@@ -21,12 +21,14 @@ Or
 6. OR simple:
 >		$ rake db:setup
 
-Optional:
-##### To use fake data
+###### Optional:
+To use fake data
+>		$ (RACK_ENV=production)* (NUMB=1)* (password=) rake db:seed
 
->		$ (NUMB=1)* rake db:seed
-
-* - Meens how many times do seeding
+* - 
+RACK_ENV - by default :development
+NUMB - number of seeds by default 
+password - by default password is `my_temp_password`
 
 7. Start server:
 >		$ ruby application.rb -sv -p <port>
