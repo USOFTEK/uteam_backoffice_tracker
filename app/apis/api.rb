@@ -29,9 +29,7 @@ class API < Grape::API
 	# Mount Api v1
 	mount(APIv1::Users)
 	mount(APIv1::Tariffs)
-	
-	# Mount swagger
-	add_swagger_documentation(hide_format: true)
+
 
 	rescue_from(:all) { |e|
 		Rack::Response.new({
@@ -52,5 +50,8 @@ class API < Grape::API
 		end
 
 	end
+
+	# Mount swagger
+	add_swagger_documentation(hide_format: true, models: [APIv1::Users, APIv1::Tariffs])
 
 end
