@@ -21,6 +21,13 @@ Or
 6. OR simple:
 >		$ rake db:setup
 
+Optional:
+##### To use fake data
+
+>		$ (NUMB=1)* rake db:seed
+
+* - Meens how many times do seeding
+
 7. Start server:
 >		$ ruby application.rb -sv -p <port>
 
