@@ -31,6 +31,14 @@ module APIv1
 					render_template("/api/v1/users/show", current_user)
 				end
 
+				desc("Update user data")
+				params do
+					requires(:token)
+					requires(:user)
+				end
+				put("/update/:token") do
+					fields = 
+				end
 			end
 
 			namespace(:statistics) do

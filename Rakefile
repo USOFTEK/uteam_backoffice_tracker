@@ -41,12 +41,20 @@ namespace(:db) do
 
   desc "Drop databases"
   task(:drop) do
-    db_configuration.each { |env,config| system("mysqladmin --user=#{config["username"]} -p#{config["password"]} -f drop #{config["database"]}", out: $stdout, err: :out) }
+    db_configuration.each { |env,config|
+      password = config["password"] rescue nil
+      password = " -p#{password}" unless password.nil?
+      system("mysqladmin --user=#{config["username"]}#{password} -f drop #{config["database"]}", out: $stdout, err: :out)
+    }
   end
 
   desc "Create databases"
   task(:create) do
-  	db_configuration.each { |env,config| system("mysql --user=#{config["username"]} -p#{config["password"]} -e 'create DATABASE #{config["database"]} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci '", out: $stdout, err: :out) }
+  	db_configuration.each { |env,config|
+      password = config["password"] rescue nil
+      password = " -p#{password}" unless password.nil?
+      system("mysql --user=#{config["username"]}#{password} -e 'create DATABASE #{config["database"]} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci '", out: $stdout, err: :out)
+    }
   end
 
   desc("Check for pending migrations")
