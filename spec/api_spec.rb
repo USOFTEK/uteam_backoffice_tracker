@@ -12,12 +12,5 @@ describe(Application) do
       end
     end
   end
-  # it("should respond with swagger documentation") do
-  #   with_api(Application, api_options) do
-  #     get_request(path: "/swagger_doc") do |c|
-  #       puts "#{c.response}"
-  #     end
-  #   end
-  # end
 
 end
