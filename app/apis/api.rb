@@ -1,5 +1,5 @@
-# Require API versions
-Dir.glob("#{File.dirname(__FILE__)}/**/*.rb").each { |f| require f }
+# Load app
+Dir.glob("#{File.join(File.dirname(__FILE__), "..")}/**/*.rb").each { |f| require f }
 
 class API < Grape::API
 
@@ -16,7 +16,7 @@ class API < Grape::API
 
 		def current_user
 			authenticate! unless @user
-			@user ||= User.find(@USER_ID)
+			@user ||= ::User.find(@USER_ID)
 		end
 
 		def render_template(path, object, status = 200,  args = {})
