@@ -6,7 +6,7 @@ describe(Application) do
 
   it("should respond with tariffs list") do
     with_api(Application, api_options) do
-      get_request(path: "/routes/") do |c|
+      get_request(path: "/api/json_actions") do |c|
         response = JSON.parse(c.response)
         expect(response).to be_kind_of(Array)
         expect(response.count).not_to be(0)

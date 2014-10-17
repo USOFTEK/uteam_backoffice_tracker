@@ -29,7 +29,7 @@ RSpec.configure { |config|
   config.include(Rack::Test::Methods)
 
   config.before(:suite) {
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.start
     DatabaseCleaner.clean
     FactoryGirl.reload

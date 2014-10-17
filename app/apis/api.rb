@@ -5,23 +5,37 @@ class API < Grape::API
 
 	helpers {
 		def authenticate!
-			@USER_ID = if Goliath.env == :test
-				params["user_id"] || 0
+			if Goliath.env == :test
+				test_authenticate!
 			else
-				request = EM::HttpRequest.new(env["config"]["auth.server"]["authorization"]).get(query: { token: params["token"] || ""})
-				error!({ error: e.message }, 401) unless request.response_header.status == 200 || request.response.has_key?("USER_DATA")
-				request.response["user_id"]
-			end	
+				remote_authenticate!(env["config"]["auth.server"]["authorization"], { token: params["token"] || "" })
+			end
+			@user ||= ::User.find(@USER_ID)
+			unauthorized! unless @user
+		end
+
+		def test_authenticate!
+			@USER_ID = params["user_id"] || nil
+		end
+
+		def remote_authenticate! url, params = {}
+			request = EM::HttpRequest.new(url).get(query: params)
+			unauthorized! unless request.response_header.status == 200 || request.response.has_key?("user_id")
+			@USER_ID = request.response["user_id"]
 		end
 
 		def current_user
 			authenticate! unless @user
-			@user ||= ::User.find(@USER_ID)
+			@user
 		end
 
 		def render_template(path, object, status = 200,  args = {})
 			format = args[:format] || :json
 			Rabl::Renderer.new(path, object, { format: format }).render
+		end
+
+		def unauthorized!
+			error!("Unauthorized!", 401)
 		end
 
 	}
@@ -33,9 +47,10 @@ class API < Grape::API
 
 	rescue_from(:all) { |e|
 		Rack::Response.new({
-			error_code: 500,
-			error_message: e.message
-		}.to_json, 500).finish
+			error: true,
+			message: e.message,
+			status: e.status
+		}.to_json, e.status).finish
 	}
 
 	resource("/") do

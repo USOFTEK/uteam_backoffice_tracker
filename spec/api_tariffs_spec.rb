@@ -6,7 +6,7 @@ describe(Application) do
   let(:token) { Faker::Internet.ip_v6_address.tr(":", "") }
 
   before(:all) { @tariffs = create_list(:tariff, 3) }
-  
+
   it("should respond with tariffs list") do
     with_api(Application, api_options) do
       get_request(path: "/api/tariffs/#{token}") do |c|
