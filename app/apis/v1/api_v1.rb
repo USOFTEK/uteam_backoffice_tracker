@@ -31,13 +31,20 @@ module APIv1
 					render_template("/api/v1/users/show", current_user)
 				end
 
-				# desc("Update user data")
-				# params do
-				# 	requires(:token)
-				# 	requires(:user)
-				# end
-				# put("/update/:token") do
-				# end
+				namespace(:update) do
+					desc("Update user email")
+					params do
+						requires(:token)
+						requires(:email)
+					end
+					put("/email/:token") do
+						current_user.email = params["email"]
+						error!("Invalid email!", 400) unless current_user.valid?
+						current_user.save!
+					end
+
+				end
+
 			end
 
 			namespace(:statistics) do

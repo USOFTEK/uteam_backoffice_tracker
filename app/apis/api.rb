@@ -15,7 +15,7 @@ class API < Grape::API
 		end
 
 		def test_authenticate!
-			@USER_ID = params["user_id"] || nil
+			@USER_ID = params["user_id"] || 0
 		end
 
 		def remote_authenticate! url, params = {}
