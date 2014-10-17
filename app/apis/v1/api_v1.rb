@@ -88,7 +88,7 @@ module APIv1
 			end
 
 		end
-
+		
 	end
 	# Tariffs
 	class Tariffs < Grape::API

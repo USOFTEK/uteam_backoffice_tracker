@@ -58,15 +58,12 @@ class API < Grape::API
 			namespace(:json_actions) do
 				desc("Load all availiable routes")
 				get("/") do
-					API.routes.map { |r| [r.route_method.downcase, r.route_path.gsub(/(\(.*\)|\/api)/, "")] if r.route_path && r.route_path.scan(/(swagger|json_actions)/i).empty? }.compact
+					{ actions: API.routes.map { |r| [r.route_method.downcase, r.route_path.gsub(/(\(.*\)|\/api)/, "")] if r.route_path && r.route_path.scan(/(swagger|json_actions)/i).empty? }.compact }.to_json
 				end
 			end
 
 		end
 
 	end
-
-	# Mount swagger
-	add_swagger_documentation(hide_format: true, models: [APIv1::Users, APIv1::Tariffs])
 
 end

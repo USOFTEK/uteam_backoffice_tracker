@@ -8,10 +8,16 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/json_actions") do |c|
         response = JSON.parse(c.response)
-        expect(response).to be_kind_of(Array)
-        expect(response.count).not_to be(0)
+        expect(response).to have_key("actions")
       end
     end
   end
+  # it("should respond with swagger documentation") do
+  #   with_api(Application, api_options) do
+  #     get_request(path: "/swagger_doc") do |c|
+  #       puts "#{c.response}"
+  #     end
+  #   end
+  # end
 
 end
