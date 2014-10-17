@@ -45,6 +45,18 @@ module APIv1
 
 				end
 
+				namespace(:delete) do
+					desc("Delete user password by token")
+					params do
+						requires(:token)
+					end
+					delete(path: "/password/:token") do
+						current_user.password_hash = ""
+						user.save!
+					end
+
+				end
+
 			end
 
 			namespace(:statistics) do
