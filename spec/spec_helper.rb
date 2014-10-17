@@ -35,6 +35,10 @@ RSpec.configure { |config|
     FactoryGirl.reload
   }
 
+  config.after(:all) {
+    DatabaseCleaner.clean
+  }
+
 }
 
 require "#{File.dirname(__FILE__)}/../application"

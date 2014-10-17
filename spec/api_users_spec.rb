@@ -12,13 +12,9 @@ describe(Application) do
 
   before(:all) { @user = create(:user, password: user_password) }
 
-  after(:all) {
-    DatabaseCleaner.clean
-  }
-
   it("should respond with user data") do
     with_api(Application, api_options) do
-      post_request(path: "/api/users/check/#{@user.username}/#{user_password}") do |c|
+      post_request(path: "/api/users/check", query: { username: @user.username, password: user_password }) do |c|
         response = JSON.parse(c.response)
         expect(response["id"]).to eq(@user.id)
       end
