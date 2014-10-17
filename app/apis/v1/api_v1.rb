@@ -16,7 +16,7 @@ module APIv1
 			namespace :check do
 				post("/") do
 					user = User.find_by(username: params["username"])
-					error!("Invalid username or password", 401) unless user.authenticate(params["password"])
+					unauthorized! if user.nil? || !user.authenticate(params["password"])
 					render_template("/api/v1/users/check", user)
 				end
 
