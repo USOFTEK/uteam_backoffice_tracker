@@ -40,7 +40,7 @@ class API < Grape::API
 
 	}
 
-	# Mount Api v1
+	# # Mount Api v1
 	mount(APIv1::Users)
 	mount(APIv1::Tariffs)
 
@@ -56,7 +56,7 @@ class API < Grape::API
 	resource("/") do
 		namespace(:api) do
 			namespace(:json_actions) do
-				desc("Load all availiable routes")
+				desc("Load all availiable routes", hidden: true)
 				get("/") do
 					{ actions: API.routes.map { |r| [r.route_method.downcase, r.route_path.gsub(/(\(.*\)|\/api)/, "")] if r.route_path && r.route_path.scan(/(swagger|json_actions)/i).empty? }.compact }.to_json
 				end
@@ -65,5 +65,7 @@ class API < Grape::API
 		end
 
 	end
+
+	add_swagger_documentation(format: :json, hide_format: true, mount_path: "/docs", base_path: lambda { |req| "http://#{req.host}:#{req.port}" } , hide_documentation_path: true)
 
 end

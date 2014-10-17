@@ -16,10 +16,7 @@ Dir.glob("#{File.dirname(__FILE__)}/lib/**/*.rb").each { |rb| require rb }
 
 # Application
 class Application < Goliath::API
-	use Goliath::Rack::Params
-	use Goliath::Rack::Formatters::JSON
-	use Goliath::Rack::Render
-
+	
 	def response env
 		::API.call(env)
 	end
