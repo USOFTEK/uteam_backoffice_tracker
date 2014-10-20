@@ -50,7 +50,7 @@ module APIv1
 					params do
 						requires(:token)
 					end
-					delete(path: "/password/:token") do
+					delete("/password/:token") do
 						current_user.password_hash = ""
 						user.save!
 					end
@@ -65,6 +65,8 @@ module APIv1
 					desc("Load user network statistic")
 					params do
 						requires(:token)
+						optional(:from, type: Integer)
+						optional(:to, type: Integer)
 					end
 					get("/:token") do
 						from = Time.at(params["date_from"]) rescue Time.new(0)
@@ -82,6 +84,8 @@ module APIv1
 					desc("Load user payments statistic")
 					params do
 						requires(:token)
+						optional(:from, type: Integer)
+						optional(:to, type: Integer)
 					end
 					get("/:token") do
 						from = Time.at(params["date_from"]) rescue Time.new(0)
@@ -94,6 +98,8 @@ module APIv1
 					desc("Load user fees statistic")
 					params do
 						requires(:token)
+						optional(:from, type: Integer)
+						optional(:to, type: Integer)
 					end
 					get("/:token") do
 						from = Time.at(params["date_from"]) rescue Time.new(0)
