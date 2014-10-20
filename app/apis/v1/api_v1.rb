@@ -60,6 +60,31 @@ module APIv1
 			end
 
 			namespace(:statistics) do
+
+				namespace(:networks) do
+					desc("Load user network statistic")
+					params do
+						requires(:token)
+					end
+					get("/:token") do
+						from = Time.at(params["date_from"]) rescue Time.new(0)
+						to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+						render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
+					end
+
+				end
+
+			end
+
+			namespace(:billing) do
+				desc("Load blling info")
+				params do
+					requires(:token)
+				end
+				get("/:token") do
+					render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
+				end
+
 				namespace(:payments) do
 					desc("Load user payments statistic")
 					params do
@@ -83,20 +108,7 @@ module APIv1
 						render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
 					end
 				end
-
-				namespace(:networks) do
-					desc("Load user network statistic")
-					params do
-						requires(:token)
-					end
-					get("/:token") do
-						from = Time.at(params["date_from"]) rescue Time.new(0)
-						to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
-						render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
-					end
-
-				end
-
+				
 			end
 
 		end

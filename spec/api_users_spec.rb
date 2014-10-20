@@ -33,7 +33,7 @@ describe(Application) do
   end
   it("should respond with user payments") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/payments/#{token}", query: { user_id: @user.id }) do |c|
+      get_request(path: "/api/users/billing/payments/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
         expect(response.count).to eq(@user.payments.count)
       end
@@ -41,7 +41,7 @@ describe(Application) do
   end
   it("should respond with user fees") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/fees/#{token}", query: { user_id: @user.id }) do |c|
+      get_request(path: "/api/users/billing/fees/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
         expect(response.count).to eq(@user.fees.count)
       end
