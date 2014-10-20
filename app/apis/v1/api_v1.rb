@@ -77,13 +77,6 @@ module APIv1
 			end
 
 			namespace(:billing) do
-				desc("Load blling info")
-				params do
-					requires(:token)
-				end
-				get("/:token") do
-					render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
-				end
 
 				namespace(:payments) do
 					desc("Load user payments statistic")
