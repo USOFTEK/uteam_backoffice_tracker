@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
 
 	validates(:ip, format: { with: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/ })
 
-	validates(:email, format: { with: /[\w\-\.]+@[\w\-]+(\.[a-z]+)*\.[a-z]+/i })
+	validates(:email, uniqueness: true, format: { with: /[\w\-\.]+@[\w\-]+(\.[a-z]+)*\.[a-z]+/i })
 
 	validates(:registration, presence: true)
 
