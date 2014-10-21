@@ -46,7 +46,7 @@ class API < Grape::API
 			uri.query = URI.encode_www_form({token: params["token"]})
 			request = Net::HTTP.get_response(uri)
 			response = Hash.new
-			if res.response_body_permitted?
+			if request.response_body_permitted?
 				response = JSON.parse(request.body) rescue Hash.new
 			end
 			unauthorized! unless request.code.to_i == 200 || response.has_key?("user_id")
