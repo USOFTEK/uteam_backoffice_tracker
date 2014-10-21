@@ -1,6 +1,16 @@
 # Load app
 Dir.glob("#{File.join(File.dirname(__FILE__), "..")}/**/*.rb").each { |f| require f }
 
+# Grape Error
+class GrapeError < StandardError
+	attr_reader :status
+
+	def initialize status
+		@status = status
+	end
+
+end
+
 class API < Grape::API
 
 	helpers {
@@ -40,7 +50,7 @@ class API < Grape::API
 		end
 
 		def grape_error! message, status = 401
-			raise GrapeError.new(status, message)
+			raise ::GrapeError.new(status, message)
 		end
 
 	}
