@@ -1,6 +1,7 @@
 require "rubygems"
 require "bundler/setup"
 require "goliath"
+require "em-synchrony"
 require "em-synchrony/activerecord"
 require "em-http-request"
 require "grape"
