@@ -42,8 +42,8 @@ namespace(:db) do
   desc "Drop databases"
   task(:drop) do
     db_configuration.each { |env,config|
-      password = config["password"] rescue nil
-      password = " -p#{password}" unless password.nil?
+      password = config["password"].strip rescue ""
+      password = " -p#{password}" unless password.empty?
       system("mysqladmin --user=#{config["username"]}#{password} -f drop #{config["database"]}", out: $stdout, err: :out)
     }
   end
@@ -51,8 +51,8 @@ namespace(:db) do
   desc "Create databases"
   task(:create) do
   	db_configuration.each { |env,config|
-      password = config["password"] rescue nil
-      password = " -p#{password}" unless password.nil?
+      password = config["password"].strip rescue ""
+      password = " -p#{password}" unless password.empty?
       system("mysql --user=#{config["username"]}#{password} -e 'create DATABASE #{config["database"]} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci '", out: $stdout, err: :out)
     }
   end
