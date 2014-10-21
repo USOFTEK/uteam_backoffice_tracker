@@ -7,6 +7,7 @@ require "grape"
 require "erb"
 require "grape-swagger"
 require "active_support/all"
+require "json"
 
 # Load app
 require "#{File.dirname(__FILE__)}/app/apis/api.rb"
