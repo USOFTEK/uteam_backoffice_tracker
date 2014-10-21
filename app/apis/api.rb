@@ -50,7 +50,7 @@ class API < Grape::API
 		end
 
 		def grape_error! message, status = 401
-			raise ::GrapeError.new(status, message)
+			raise ::GrapeError.new(status), message
 		end
 
 	}
