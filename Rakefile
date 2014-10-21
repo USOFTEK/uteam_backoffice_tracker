@@ -64,7 +64,6 @@ namespace(:db) do
 
   desc("Clean database")
   task(:clean => ["db:connect"]) do
-    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.start
     DatabaseCleaner.clean
