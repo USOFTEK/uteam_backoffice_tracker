@@ -43,7 +43,7 @@ class API < Grape::API
 
 		def remote_authenticate! url, params = {}
 			uri = URI(url)
-			uri.query = URI.encode_www_format({token: params["token"]})
+			uri.query = URI.encode_www_form({token: params["token"]})
 			request = Net::HTTP.get_response(uri)
 			response = Hash.new
 			if res.response_body_permitted?
