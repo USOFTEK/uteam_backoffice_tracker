@@ -20,7 +20,7 @@ class API < Grape::API
 
 		def remote_authenticate! url, params = {}
 			request = EM::HttpRequest.new(url).get(query: params)
-			response = JSON.parse(request.response)
+			response = JSON.parse(request.response) rescue {}
 			unauthorized! unless request.response_header.status == 200 || response.has_key?("user_id")
 			@USER_ID = response["user_id"]
 		end
