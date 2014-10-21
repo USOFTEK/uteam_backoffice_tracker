@@ -13,6 +13,19 @@ end
 
 class API < Grape::API
 
+	rescue_from(:all) { |e|
+		begin
+			status, message = e.status, e.message
+		rescue NoMethodError
+			status, message = 500, e.message
+		end
+		Rack::Response.new({
+			error: true,
+			message: message,
+			status: status
+		}.to_json, status).finish
+	}
+
 	helpers {
 		def authenticate!
 			if Goliath.env == :test
@@ -58,15 +71,6 @@ class API < Grape::API
 	# # Mount Api v1
 	mount(APIv1::Users)
 	mount(APIv1::Tariffs)
-
-
-	rescue_from(:all) { |e|
-		Rack::Response.new({
-			error: true,
-			message: e.message,
-			status: e.status
-		}.to_json, e.status).finish
-	}
 
 	resource("/") do
 		namespace(:api) do
