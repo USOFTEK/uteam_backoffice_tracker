@@ -36,7 +36,11 @@ class API < Grape::API
 		end
 
 		def unauthorized!
-			error!("Unauthorized!", 401)
+			grape_error!("Unauthorized!", 401)
+		end
+
+		def grape_error! message, status = 401
+			raise GrapeError.new(status, message)
 		end
 
 	}
