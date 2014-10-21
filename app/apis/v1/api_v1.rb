@@ -28,7 +28,9 @@ module APIv1
 					requires(:token)
 				end
 				get("/:token") do
-					render_template("/api/v1/users/show", current_user)
+					authenticate! { |current_user|
+						render_template("/api/v1/users/show", current_user)
+					}
 				end
 
 				namespace(:update) do
@@ -38,9 +40,11 @@ module APIv1
 						requires(:email)
 					end
 					put("/email/:token") do
-						current_user.email = params["email"]
-						error!("Invalid email!", 400) unless current_user.valid?
-						current_user.save!
+						authenticate! { |current_user|
+							current_user.email = params["email"]
+							error!("Invalid email!", 400) unless current_user.valid?
+							current_user.save!
+						}
 					end
 
 				end
@@ -51,8 +55,10 @@ module APIv1
 						requires(:token)
 					end
 					delete("/password/:token") do
-						current_user.password_hash = ""
-						user.save!
+						authenticate! { |current_user|
+							current_user.password_hash = ""
+							user.save!
+						}
 					end
 
 				end
@@ -69,9 +75,11 @@ module APIv1
 						optional(:to, type: Integer)
 					end
 					get("/:token") do
-						from = Time.at(params["date_from"]) rescue Time.new(0)
-						to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
-						render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
+						authenticate! { |current_user|
+							from = Time.at(params["date_from"]) rescue Time.new(0)
+							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
+						}
 					end
 
 				end
@@ -88,9 +96,11 @@ module APIv1
 						optional(:to, type: Integer)
 					end
 					get("/:token") do
-						from = Time.at(params["date_from"]) rescue Time.new(0)
-						to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
-						render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(:created_at))
+						authenticate! { |current_user|
+							from = Time.at(params["date_from"]) rescue Time.new(0)
+							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(:created_at))
+						}
 					end
 				end
 
@@ -102,9 +112,11 @@ module APIv1
 						optional(:to, type: Integer)
 					end
 					get("/:token") do
-						from = Time.at(params["date_from"]) rescue Time.new(0)
-						to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
-						render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
+						authenticate! { |current_user|
+							from = Time.at(params["date_from"]) rescue Time.new(0)
+							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
+						}
 					end
 				end
 				

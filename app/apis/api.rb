@@ -27,34 +27,18 @@ class API < Grape::API
 	}
 
 	helpers {
-		def authenticate!
+		def authenticate! &blk
 			if Goliath.env == :test
-				test_authenticate!
+				blk.call(::User.find(params["user_id"] || 0))
 			else
-				remote_authenticate!(env["config"]["auth.server"]["authorization"], { token: params["token"] || "" })
-			end
-			@user ||= ::User.find(@USER_ID) rescue nil
-			unauthorized! unless @user
-		end
-
-		def test_authenticate!
-			@USER_ID = params["user_id"] || 0
-		end
-
-		def remote_authenticate! url, params = {}
-			EM.synchrony {
-				EM::HttpRequest.new(url).get(query: params) { |request|
-					response = JSON.parse(request.response) rescue Hash.new
-					unauthorized! unless request.response_header.status.to_i == 200 || response.has_key?("user_id")
-					@USER_ID = response["user_id"]
+				::Communicator.new(env["config"]["auth.server"]["authorization"]).get_auth(token: params["token"] || "") { |response|
+					response = JSON.parse(response) rescue Hash.new
+					unauthorized! unless response.has_key?("user_id")
+					@user ||= ::User.find(response["user_id"]) rescue nil
+					unauthorized! unless @user
+					blk.call(@user)
 				}
-				EM.stop
-			}
-		end
-
-		def current_user
-			authenticate! unless @user
-			@user
+			end
 		end
 
 		def render_template(path, object, status = 200,  args = {})
