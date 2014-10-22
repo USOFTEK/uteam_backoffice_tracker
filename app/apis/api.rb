@@ -48,8 +48,9 @@ class API < Grape::API
 					user = ::User.find(response["user_id"].to_i) rescue nil
 					grape_error!("Unauthorized!", 401) unless user
 					block.call(user) if block_given?
-				else
-					Communicator.new(env["config"]["auth.server"]["authorization"]).get_auth(token: params[:token]) do |response|
+        else
+          auth = Communicator.new(env["config"]["auth.server"]["authorization"])
+					auth.get(token: params[:token]) do |response|
 						response = JSON.parse(response) rescue Hash.new
 						grape_error!("Authentication failue!", 401) unless response.has_key?("user_id")
 						user = ::User.find(response["user_id"].to_i) rescue nil
