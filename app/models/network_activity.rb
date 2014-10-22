@@ -8,4 +8,8 @@ class NetworkActivity < ActiveRecord::Base
 
 	validates(:received, presence: true, numericality: true, length: { maximum: 10 })
 
+	def at
+		Time.at(per).to_i
+	end
+
 end

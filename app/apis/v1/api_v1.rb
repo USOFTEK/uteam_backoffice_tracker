@@ -84,7 +84,7 @@ module APIv1
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
-							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
+							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc))
 						}
 					end
 
@@ -107,7 +107,7 @@ module APIv1
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
-							render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(:created_at))
+							render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(created_at: :asc))
 						}
 					end
 				end
@@ -125,7 +125,7 @@ module APIv1
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
-							render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
+							render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(created_at: :asc))
 						}
 					end
 				end

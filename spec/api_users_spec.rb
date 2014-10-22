@@ -53,6 +53,7 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
+        puts "\n#{response}\n"
         expect(response).to have_key("netstats")
         expect(response["netstats"].count).to eq(@user.network_activities.count)
       end

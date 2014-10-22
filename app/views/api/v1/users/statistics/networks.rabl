@@ -1,2 +1,2 @@
 collection @object, root: "netstats"
-attributes(:sent, :received, :per)
+attributes(:sent, :received, :at)
