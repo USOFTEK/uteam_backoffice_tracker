@@ -28,19 +28,35 @@ class API < Grape::API
 
 	helpers {
 		def within_session &block
-				Proc.new {
-					response = Hash.new
-					if Goliath.env == :test
-						response["user_id"] = params["user_id"] || 0
-					else
-						request = EM::HttpRequest.new(env["config"]["auth.server"]["authorization"]).get(query: { token: params[:token] || "" })
-						response = JSON.parse(request.response) rescue Hash.new
-						grape_error!("Authentication failue!", 401) unless request.response_header.status == 200 || response.has_key?("user_id")
-					end
+				# Proc.new {
+				# 	response = Hash.new
+				# 	if Goliath.env == :test
+				# 		response["user_id"] = params["user_id"] || 0
+				# 	else
+				# 		request = EM::HttpRequest.new(env["config"]["auth.server"]["authorization"]).get(query: { token: params[:token] || "" })
+				# 		response = JSON.parse(request.response) rescue Hash.new
+				# 		grape_error!("Authentication failue!", 401) unless request.response_header.status == 200 || response.has_key?("user_id")
+				# 	end
+				# 	user = ::User.find(response["user_id"].to_i) rescue nil
+				# 	grape_error!("Unauthorized!", 401) unless user
+				# 	block.call(user) if block_given?
+				# }.call
+				params[:token] = params[:token] || ""
+				response = Hash.new
+				if Goliath.env == :test
+					response["user_id"] = params["user_id"] || 0
 					user = ::User.find(response["user_id"].to_i) rescue nil
 					grape_error!("Unauthorized!", 401) unless user
 					block.call(user) if block_given?
-				}.call
+				else
+					Communicator.new(env["config"]["auth.server"]["authorization"]).get_auth(token: params[:token]) do |response|
+						response = JSON.parse(response) rescue Hash.new
+						grape_error!("Authentication failue!", 401) unless response.has_key?("user_id")
+						user = ::User.find(response["user_id"].to_i) rescue nil
+						grape_error!("Unauthorized!", 401) unless user
+						block.call(user) if block_given?
+					end
+				end
 		end
 
 		def render_template(path, object, status = 200,  args = {})
