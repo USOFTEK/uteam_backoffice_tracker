@@ -33,7 +33,7 @@ class Communicator
               comm.send(action_name, params) do |response|
                 begin
                   response = JSON.parse(response)
-                  if response["error"]
+                  if response.respond_to?("key?") && response["error"]
                     response["status"] ||= 400
                     response["message"] ||= "Error"
                     grape_error!(response["message"], response["status"])
@@ -59,14 +59,13 @@ class Communicator
     define_singleton_method(name) do |opts={}, &blk|
       link = "#{@address}#{action}"
       request = Proc.new do
-        #p link, meth, opts
         req = EM::HttpRequest.new(link).method(meth).call(body: opts)
         blk.call(req.response) if blk
       end
       EM.reactor_running? ? request.call : EM.synchrony { request.call; EM.stop }
     end
 
-    self.method(name).call(params, &meth_blk)
+    self.send(name, params, &meth_blk)
   end
 
 end
