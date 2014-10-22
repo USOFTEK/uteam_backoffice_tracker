@@ -1,5 +1,6 @@
 FactoryGirl.define {
 	sequence(:username) { |n| "#{Faker::Internet.user_name}_#{n}" }
+	sequence(:date_interval) { |n| Time.now - n.to_i.day }
 
 	factory(:user) {
 		username { generate(:username) }
@@ -11,13 +12,13 @@ FactoryGirl.define {
 		address_flat(Faker::Number.digit)
 		netmask(Faker::Internet.ip_v4_address)
 		registration { Faker::Time.between(rand(366).days.ago, Time.now) }
-		speed("#{Faker::Number.number(3)} Mb/s")
+		speed { "#{Faker::Number.number(3)} Mb/s" }
 
 		tariff
 
 		ignore {
 			phones_count 5
-			network_activities_count 10
+			network_activities_count 50
 
 		}
 
@@ -88,7 +89,7 @@ FactoryGirl.define {
 	factory(:network_activity) {
 		sent(Faker::Number.number(9))
 		received(Faker::Number.number(9))
-		per { Faker::Time.between(rand(10).days.ago, Time.now) }
+		per { generate(:date_interval) }
 
 		user
 
