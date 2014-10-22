@@ -7,11 +7,11 @@ class User < ActiveRecord::Base
 
 	has_paper_trail
 	
-	has_one(:billing)
+	has_one(:billing, dependent: :delete)
 
-	has_many(:phones)
+	has_many(:phones, dependent: :delete)
 
-	has_many(:network_activities)
+	has_many(:network_activities, dependent: :delete)
 	
 	delegate(:payments, to: :billing, allow_nil: true)
 
