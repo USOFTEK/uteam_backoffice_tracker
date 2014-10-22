@@ -5,8 +5,6 @@ require "bcrypt"
 class User < ActiveRecord::Base
 	include BCrypt
 
-	# before_save(:encrypt_password)
-
 	has_paper_trail
 	
 	has_one(:billing)
@@ -16,7 +14,7 @@ class User < ActiveRecord::Base
 	has_many(:network_activities)
 	
 	delegate(:payments, to: :billing, allow_nil: true)
-	
+
 	delegate(:fees, to: :billing, allow_nil: true)
 
 	belongs_to(:tariff)
@@ -33,6 +31,9 @@ class User < ActiveRecord::Base
 
 	validates(:registration, presence: true)
 
+	scope(:disabled, -> { where(disable: true) })
+	scope(:active, -> { where(disable: false) })
+
 	def authenticate pass
 		password == pass
 	end
@@ -45,10 +46,9 @@ class User < ActiveRecord::Base
 		self.password_hash = Password.create(pwd)
 	end
 
-	# private
-
-	# def encrypt_password
-	# 	self.password = Password.create(password)
-	# end
+	def credit round = 2
+		@credit = billing.deposit - tariff.month_fee
+		return @credit < 0 ? @credit.round(round) : 0
+	end
 
 end
