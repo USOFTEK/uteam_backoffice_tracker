@@ -1,7 +1,5 @@
 FactoryGirl.define {
-	sequence(:username) { |n|
-		"#{Faker::Internet.user_name}_#{n}"
-	}
+	sequence(:username) { |n| "#{Faker::Internet.user_name}_#{n}" }
 
 	factory(:user) {
 		username { generate(:username) }
@@ -90,7 +88,7 @@ FactoryGirl.define {
 	factory(:network_activity) {
 		sent(Faker::Number.number(9))
 		received(Faker::Number.number(9))
-		per(Faker::Time.between(30.days.ago, Time.now))
+		per { Faker::Time.between(rand(10).days.ago, Time.now) }
 
 		user
 
