@@ -27,27 +27,25 @@ class API < Grape::API
 	}
 
 	helpers {
-		def authenticate! &blk
-			if Goliath.env == :test
-				blk.call(::User.find(params["user_id"] || 0))
-			else
-				::Communicator.new(env["config"]["auth.server"]["authorization"]).get_auth(token: params["token"] || "") { |response|
-					response = JSON.parse(response) rescue Hash.new
-					unauthorized! unless response.has_key?("user_id")
-					@user ||= ::User.find(response["user_id"]) rescue nil
-					unauthorized! unless @user
-					blk.call(@user)
-				}
-			end
+		def within_session &block
+				Proc.new {
+					response = Hash.new
+					if Goliath.env == :test
+						response["user_id"] = params["user_id"] || 0
+					else
+						request = EM::HttpRequest.new(env["config"]["auth.server"]["authorization"]).get(query: { token: params[:token] || "" })
+						response = JSON.parse(request.response) rescue Hash.new
+						grape_error!("Authentication failue!", 401) unless request.response_header.status == 200 || response.has_key?("user_id")
+					end
+					user = ::User.find(response["user_id"].to_i) rescue nil
+					grape_error!("Unauthorized!", 401) unless user
+					block.call(user) if block_given?
+				}.call
 		end
 
 		def render_template(path, object, status = 200,  args = {})
 			format = args[:format] || :json
 			Rabl::Renderer.new(path, object, { format: format }).render
-		end
-
-		def unauthorized!
-			grape_error!("Unauthorized!", 401)
 		end
 
 		def grape_error! message, status = 401

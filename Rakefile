@@ -24,7 +24,7 @@ namespace(:db) do
     ActiveRecord::Base.establish_connection(config[ENV["RACK_ENV"].downcase])
   end
   
-  desc "creates and migrates your database"
+  desc("creates and migrates your database")
   task(:setup) do
     Rake::Task["db:create"].invoke
     db_configuration.each { |env,config|
@@ -39,7 +39,7 @@ namespace(:db) do
     ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, ENV["VERSION"])
   end
 
-  desc "Drop databases"
+  desc("Drop databases")
   task(:drop) do
     db_configuration.each { |env,config|
       password = config["password"].strip rescue ""
@@ -48,7 +48,7 @@ namespace(:db) do
     }
   end
 
-  desc "Create databases"
+  desc("Create databases")
   task(:create) do
   	db_configuration.each { |env,config|
       password = config["password"].strip rescue ""
@@ -86,4 +86,4 @@ require "rspec/core/rake_task"
 
 RSpec::Core::RakeTask.new("spec")
 
-task :default => ["db:migrate", :spec]
+task :default => ["db:abort_if_pending_migrations", :spec]
