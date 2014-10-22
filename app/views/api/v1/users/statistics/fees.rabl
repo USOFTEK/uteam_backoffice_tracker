@@ -1,2 +1,2 @@
-collection @object
+collection @object, root: "fees"
 attributes(:amount, :deposit, :description, :ip)

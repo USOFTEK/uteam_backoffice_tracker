@@ -35,7 +35,8 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/billing/payments/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response.count).to eq(@user.payments.count)
+        expect(response).to have_key("payments")
+        expect(response["payments"].count).to eq(@user.payments.count)
       end
     end
   end
@@ -43,7 +44,8 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/billing/fees/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response.count).to eq(@user.fees.count)
+        expect(response).to have_key("fees")
+        expect(response["fees"].count).to eq(@user.fees.count)
       end
     end
   end
@@ -51,7 +53,8 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response.count).to eq(@user.network_activities.count)
+        expect(response).to have_key("netstats")
+        expect(response["netstats"].count).to eq(@user.network_activities.count)
       end
     end
   end
