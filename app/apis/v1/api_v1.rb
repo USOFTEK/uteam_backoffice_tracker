@@ -80,8 +80,10 @@ module APIv1
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params[:date_from]) rescue Time.new(0)
-							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
+							params[:date_from] ||= 0
+							params[:date_to] ||= Time.now.midnight + 1.day
+							from = Time.at(params[:date_from])
+							to = Time.at(params[:date_to])
 							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
 						}
 					end
@@ -101,8 +103,10 @@ module APIv1
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params[:date_from]) rescue Time.new(0)
-							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
+							params[:date_from] ||= 0
+							params[:date_to] ||= Time.now.midnight + 1.day
+							from = Time.at(params[:date_from])
+							to = Time.at(params[:date_to])
 							render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(:created_at))
 						}
 					end
@@ -117,8 +121,10 @@ module APIv1
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params[:date_from]) rescue Time.new(0)
-							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
+							params[:date_from] ||= 0
+							params[:date_to] ||= Time.now.midnight + 1.day
+							from = Time.at(params[:date_from])
+							to = Time.at(params[:date_to])
 							render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
 						}
 					end
