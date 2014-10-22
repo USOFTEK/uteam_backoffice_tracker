@@ -75,13 +75,13 @@ module APIv1
 					desc("Load user network statistic")
 					params do
 						requires(:token)
-						optional(:from, type: Integer)
-						optional(:to, type: Integer)
+						optional(:date_from, type: Integer)
+						optional(:date_to, type: Integer)
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params["date_from"]) rescue Time.new(0)
-							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							from = Time.at(params[:date_from]) rescue Time.new(0)
+							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
 							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(created_at: from..to).order(:created_at))
 						}
 					end
@@ -96,13 +96,13 @@ module APIv1
 					desc("Load user payments statistic")
 					params do
 						requires(:token)
-						optional(:from, type: Integer)
-						optional(:to, type: Integer)
+						optional(:date_from, type: Integer)
+						optional(:date_to, type: Integer)
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params["date_from"]) rescue Time.new(0)
-							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							from = Time.at(params[:date_from]) rescue Time.new(0)
+							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
 							render_template("/api/v1/users/statistics/payments", current_user.payments.where(created_at: from..to).order(:created_at))
 						}
 					end
@@ -112,13 +112,13 @@ module APIv1
 					desc("Load user fees statistic")
 					params do
 						requires(:token)
-						optional(:from, type: Integer)
-						optional(:to, type: Integer)
+						optional(:date_from, type: Integer)
+						optional(:date_to, type: Integer)
 					end
 					get("/:token") do
 						within_session { |current_user|
-							from = Time.at(params["date_from"]) rescue Time.new(0)
-							to = Time.at(params["date_to"]) rescue Time.now.midnight + 1.day
+							from = Time.at(params[:date_from]) rescue Time.new(0)
+							to = Time.at(params[:date_to]) rescue Time.now.midnight + 1.day
 							render_template("/api/v1/users/statistics/fees", current_user.fees.where(created_at: from..to).order(:created_at))
 						}
 					end
