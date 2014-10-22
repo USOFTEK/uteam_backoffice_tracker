@@ -60,8 +60,7 @@ class Communicator
       link = "#{@address}#{action}"
       request = Proc.new do
         req = EM::HttpRequest.new(link).method(meth).call(body: opts)
-        blk.call(link + meth + opts.to_s)
-        #blk.call(req.response) if blk
+        blk.call(req.response) if blk
       end
       EM.reactor_running? ? request.call : EM.synchrony { request.call; EM.stop }
     end

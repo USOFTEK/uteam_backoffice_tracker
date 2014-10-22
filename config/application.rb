@@ -1,5 +1,5 @@
 config["auth.server"] = {
-  "authorization" => ""
+  "authorization" => "http://localhost:9005/api/auth/"
 }
 
 
