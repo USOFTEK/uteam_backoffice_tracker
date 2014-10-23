@@ -29,14 +29,11 @@ class API < Grape::API
 	helpers {
 
 		def within_session &block
-			response = Hash.new
-			response["is_admin"] = params["is_admin"] rescue 0
-			response["user_id"] = params["user_id"] rescue nil
 			if Goliath.env == :test
-				unless response["is_admin"].to_i.zero?
+				if params["is_admin"] || false
 					block.call
 				else
-					user = ::User.find(response["user_id"].to_i) rescue nil
+					user = ::User.find(params["user_id"] || nil) rescue nil
 					grape_error!("Unauthorized!", 401) unless user
 					block.call(user) if block_given?
 				end
@@ -45,8 +42,8 @@ class API < Grape::API
 				auth.get(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
 					if response.has_key?("is_admin")
-						if response["is_admin"].to_i.zero?
-							block.call
+						if response["is_admin"]
+							block.call if block_given?
 						else
 							user = ::User.find(response["user_id"].to_i) rescue nil
 							grape_error!("Unauthorized!", 401) unless user
