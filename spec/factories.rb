@@ -11,12 +11,12 @@ FactoryGirl.define {
 		address_build(Faker::Address.building_number)
 		address_flat(Faker::Number.digit)
 		netmask(Faker::Internet.ip_v4_address)
-		registration { Faker::Time.between(rand(366).days.ago, Time.now) }
+		registration { Faker::Time.between(rand(366).day.ago, Time.now) }
 		speed { "#{Faker::Number.number(3)} Mb/s" }
 
 		tariff
 
-		ignore {
+		transient {
 			phones_count 5
 			network_activities_count 50
 
@@ -52,7 +52,7 @@ FactoryGirl.define {
 		user
 
 		factory(:billing_with_statistics) {
-			ignore {
+			transient {
 				payments_count 5
 				fees_count 5
 				

@@ -51,4 +51,8 @@ class User < ActiveRecord::Base
 		return @credit < 0 ? @credit.round(round) : 0
 	end
 
+	def self.public_fields
+		[:initials, :address_street, :address_build, :address_flat, :username]
+	end
+
 end

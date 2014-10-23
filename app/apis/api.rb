@@ -27,37 +27,36 @@ class API < Grape::API
 	}
 
 	helpers {
+
 		def within_session &block
-				# Proc.new {
-				# 	response = Hash.new
-				# 	if Goliath.env == :test
-				# 		response["user_id"] = params["user_id"] || 0
-				# 	else
-				# 		request = EM::HttpRequest.new(env["config"]["auth.server"]["authorization"]).get(query: { token: params[:token] || "" })
-				# 		response = JSON.parse(request.response) rescue Hash.new
-				# 		grape_error!("Authentication failue!", 401) unless request.response_header.status == 200 || response.has_key?("user_id")
-				# 	end
-				# 	user = ::User.find(response["user_id"].to_i) rescue nil
-				# 	grape_error!("Unauthorized!", 401) unless user
-				# 	block.call(user) if block_given?
-				# }.call
-				params[:token] = params[:token] || ""
-				response = Hash.new
-				if Goliath.env == :test
-					response["user_id"] = params["user_id"] || 0
+			response = Hash.new
+			response["is_admin"] = params["is_admin"] || 0
+			response["user_id"] = params["user_id"] || nil
+			if Goliath.env == :test
+				unless response["is_admin"].to_i.zero?
+					block.call
+				else
 					user = ::User.find(response["user_id"].to_i) rescue nil
 					grape_error!("Unauthorized!", 401) unless user
 					block.call(user) if block_given?
-        else
-          auth = Communicator.new(env["config"]["auth.server"]["authorization"])
-					auth.get(token: params[:token]) do |response|
-						response = JSON.parse(response) rescue Hash.new
-						grape_error!("Authentication failue!", 401) unless response.has_key?("user_id")
-						user = ::User.find(response["user_id"].to_i) rescue nil
-						grape_error!("Unauthorized!", 401) unless user
-						block.call(user) if block_given?
+				end
+      else
+      	auth = Communicator.new(env["config"]["auth.server"]["authorization"])
+				auth.get(token: params[:token]) do |response|
+					response = JSON.parse(response) rescue Hash.new
+					if response.has_key?("is_admin")
+						if response["is_admin"].to_i.zero?
+							block.call
+						else
+							user = ::User.find(response["user_id"].to_i) rescue nil
+							grape_error!("Unauthorized!", 401) unless user
+							block.call(user) if block_given?
+						end
+					else
+						grape_error!("Authentication failue!", 401)
 					end
 				end
+      end
 		end
 
 		def render_template(path, object, status = 200,  args = {})

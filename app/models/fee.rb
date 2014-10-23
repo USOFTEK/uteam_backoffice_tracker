@@ -13,6 +13,10 @@ class Fee < ActiveRecord::Base
 
 	validates(:ip, format: { with: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/ })
 
+	def created
+		Time.at(created_at).to_i rescue 0
+	end
+
 	private
 
 	def set_last_billing_deposit

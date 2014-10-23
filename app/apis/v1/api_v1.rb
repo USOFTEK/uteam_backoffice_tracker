@@ -13,7 +13,7 @@ module APIv1
 				requires(:username)
 				requires(:password)
 			end
-			namespace :check do
+			namespace(:check) do
 				post("/") do
 					user = User.find_by(username: params["username"])
 					unauthorized! if user.nil? || !user.authenticate(params["password"])
@@ -33,7 +33,53 @@ module APIv1
 					}
 				end
 
+				desc("Update user profile by allowed fields")
+				params do
+					requires(:token)
+				end
+				put("/:token") do
+					within_session { |current_user|
+						begin
+							fields = FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create
+							attributes = params.reject { |k,v| !User.public_fields.include?(k.to_sym) || fields.disallowed_fields.include?(k) }.to_hash
+							grape_error!("Invalid fields or bad request!", 400) if attributes.empty?
+							current_user.assign_attributes(attributes)
+							current_user.save!
+						rescue ActiveRecord::RecordInvalid => invalid
+							grape_error!(invalid.record.errors.full_messages.join("; "), 400)
+						end
+					}
+				end
+
+				namespace(:fields) do
+					desc("Display allowed fields to update in user")
+					params do
+						requires(:token)
+					end
+					get("/:token") do
+						within_session { |current_user|
+							render_template("/api/v1/users/profile/fields", FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create)
+						}
+					end
+
+				end
+
 				namespace(:update) do
+					namespace(:fields) do
+						desc("Update editable fields")
+						params do
+							requires(:token)
+							requires(:fields, type: Array)
+						end
+						put("/:token") do
+							within_session {
+								object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
+								object.disallowed_fields = params["fields"].map { |k| k.to_sym if User.public_fields.include?(k.to_sym) }.compact
+								object.save!
+							}
+						end
+
+					end
 
 					namespace(:email) do
 						desc("Update user email")
@@ -53,14 +99,14 @@ module APIv1
 
 				end
 
-				namespace(:delete) do
+				namespace(:password) do
 					desc("Delete user password by token")
 					params do
 						requires(:token)
 					end
-					delete("/password/:token") do
+					delete("/:token") do
 						within_session { |current_user|
-							current_user.password_hash = ""
+							current_user.password = ""
 							current_user.save!
 						}
 					end
@@ -135,6 +181,7 @@ module APIv1
 		end
 		
 	end
+
 	# Tariffs
 	class Tariffs < Grape::API
 
