@@ -30,8 +30,8 @@ class API < Grape::API
 
 		def within_session &block
 			response = Hash.new
-			response["is_admin"] = params["is_admin"] || 0
-			response["user_id"] = params["user_id"] || nil
+			response["is_admin"] = params["is_admin"] rescue 0
+			response["user_id"] = params["user_id"] rescue nil
 			if Goliath.env == :test
 				unless response["is_admin"].to_i.zero?
 					block.call
