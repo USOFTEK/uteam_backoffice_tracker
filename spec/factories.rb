@@ -3,7 +3,7 @@ FactoryGirl.define {
 	sequence(:date_interval) { |n| Time.now - n.to_i.day }
 
 	factory(:user) {
-		username { generate(:username) }
+		username { "#{["gena", "ruslan", "lesya", "leo", "test"].sample}#{Random.rand(100)}" }
 		ip { Faker::Internet.ip_v4_address }
 		email { Faker::Internet.safe_email }
 		initials { Faker::Name.name }
