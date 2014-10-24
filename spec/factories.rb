@@ -87,8 +87,8 @@ FactoryGirl.define {
 	}
 
 	factory(:network_activity) {
-		sent { Faker::Number.number(9) }
-		received { Faker::Number.number(9) }
+		sent { Faker::Number.number(6) }
+		received { Faker::Number.number(6) }
 		per { generate(:date_interval) }
 
 		user
