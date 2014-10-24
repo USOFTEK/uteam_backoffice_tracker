@@ -20,7 +20,9 @@ class Fee < ActiveRecord::Base
 	private
 
 	def set_last_billing_deposit
-		self.deposit = billing.deposit
+		unless deposit.nil?
+			self.deposit = billing.deposit rescue 0
+		end
 	end
 
 end

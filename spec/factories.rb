@@ -4,13 +4,13 @@ FactoryGirl.define {
 
 	factory(:user) {
 		username { generate(:username) }
-		ip(Faker::Internet.ip_v4_address)
-		email(Faker::Internet.safe_email)
-		initials(Faker::Name.name)
-		address_street(Faker::Address.street_name)
-		address_build(Faker::Address.building_number)
-		address_flat(Faker::Number.digit)
-		netmask(Faker::Internet.ip_v4_address)
+		ip { Faker::Internet.ip_v4_address }
+		email { Faker::Internet.safe_email }
+		initials { Faker::Name.name }
+		address_street { Faker::Address.street_name }
+		address_build { Faker::Address.building_number }
+		address_flat { Faker::Number.digit }
+		netmask { Faker::Internet.ip_v4_address }
 		registration { Faker::Time.between(rand(366).day.ago, Time.now) }
 		speed { "#{Faker::Number.number(3)} Mb/s" }
 
@@ -32,13 +32,13 @@ FactoryGirl.define {
 	
 	factory(:tariff) {
 		name { generate(:username) }
-		month_fee(Faker::Commerce.price)
-		day_fee(Faker::Commerce.price)
+		month_fee { Faker::Commerce.price }
+		day_fee { Faker::Commerce.price }
 
 	}
 
 	factory(:phone) {
-		number(Faker::PhoneNumber.cell_phone)
+		number { Faker::PhoneNumber.cell_phone }
 		is_mobile(true)
 		is_main(true)
 
@@ -47,7 +47,7 @@ FactoryGirl.define {
 	}
 
 	factory(:billing) {
-		deposit(Faker::Commerce.price)
+		deposit { Faker::Commerce.price }
 
 		user
 
@@ -69,26 +69,26 @@ FactoryGirl.define {
 	}
 
 	factory(:payment) {
-		amount(Faker::Commerce.price)
-		description(Faker::Lorem.sentence)
-		ip(Faker::Internet.ip_v4_address)
+		amount { Faker::Commerce.price }
+		description { Faker::Lorem.sentence }
+		ip { Faker::Internet.ip_v4_address }
 
 		billing
 
 	}
 
 	factory(:fee) {
-		amount(Faker::Commerce.price)
-		description(Faker::Lorem.sentence)
-		ip(Faker::Internet.ip_v4_address)
+		amount { Faker::Commerce.price }
+		description { Faker::Lorem.sentence }
+		ip { Faker::Internet.ip_v4_address }
 
 		billing
 
 	}
 
 	factory(:network_activity) {
-		sent(Faker::Number.number(9))
-		received(Faker::Number.number(9))
+		sent { Faker::Number.number(9) }
+		received { Faker::Number.number(9) }
 		per { generate(:date_interval) }
 
 		user
