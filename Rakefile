@@ -7,6 +7,7 @@ require "erb"
 require "factory_girl"
 require "database_cleaner"
 require "faker"
+require "grape-swagger"
 require "active_support/all"
 
 # helpers

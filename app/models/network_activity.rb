@@ -4,9 +4,9 @@ class NetworkActivity < ActiveRecord::Base
 	
 	belongs_to(:user)
 
-	validates(:sent, presence: true, numericality: true, length: { maximum: 10 })
+	validates(:sent, presence: true, numericality: true)
 
-	validates(:received, presence: true, numericality: true, length: { maximum: 10 })
+	validates(:received, presence: true, numericality: true)
 
 	def at
 		Time.at(per).to_i

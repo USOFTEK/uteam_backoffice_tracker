@@ -130,7 +130,7 @@ module APIv1
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
-							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc))
+							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
 						}
 					end
 
