@@ -50,12 +50,12 @@ describe(Application) do
       end
     end
   end
-  it("should respond with user network statistics") do
+  it("should respond with user network statistics per 1 month") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id }) do |c|
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, from: (Time.now - 1.month).to_i, to: Time.now.midnight + 1.day }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
-        expect(response["netstats"].count).to eq(@user.network_activities.count)
+        expect(response["netstats"].count).to eq(@user.network_activities.where(per: (Time.now.midnight - 1.month)..(Time.now.midnight + 1.day)).count)
       end
     end
   end

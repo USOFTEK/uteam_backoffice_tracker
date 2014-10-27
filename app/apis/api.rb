@@ -27,7 +27,7 @@ class API < Grape::API
 	}
 
 	helpers {
-
+		# Session helper
 		def within_session &block
 			if Goliath.env == :test
 				if params["is_admin"] || false
@@ -56,11 +56,26 @@ class API < Grape::API
       end
 		end
 
+		# Date range of statistics helper
+		def make_date_range from, to, keys = { sent: 0, received: 0 }
+			range = Hash.new
+			return range if Time.at(to) < Time.at(from)
+			from = Time.at(from).to_date
+			to = Time.at(to).to_date
+			(from - to).to_i.times { |i|
+				index = from + i.day
+				range[index.to_s] = OpenStruct.new(keys.merge(date: index.to_time.to_i))
+			}
+			range
+		end
+
+		# Rabl render helper
 		def render_template(path, object, status = 200,  args = {})
 			format = args[:format] || :json
 			Rabl::Renderer.new(path, object, { format: format }).render
 		end
 
+		# Grape error helper
 		def grape_error! message, status = 401
 			raise ::GrapeError.new(status), message
 		end

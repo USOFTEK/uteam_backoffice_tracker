@@ -126,11 +126,16 @@ module APIv1
 					end
 					get("/:token") do
 						within_session { |current_user|
-							params[:date_from] ||= 0
-							params[:date_to] ||= Time.now.midnight + 1.day
+							params[:date_from] ||= Time.now.midnight - 1.month
+							params[:date_to] ||= params[:date_from] + 1.month
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
-							render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
+							range = make_date_range(from, to)
+							current_user.network_activities.where(per: from..to).order(per: :asc).group(:per).each { |record|
+								range[record.per_date] = OpenStruct.new({ sent: record.sent, received: record.received, date: record.at })
+							}
+							render_template("/api/v1/users/statistics/networks", range.values)
+							# render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
 						}
 					end
 

@@ -12,4 +12,8 @@ class NetworkActivity < ActiveRecord::Base
 		Time.at(per).to_i
 	end
 
+	def per_date
+		Time.at(per).to_date.to_s
+	end
+
 end
