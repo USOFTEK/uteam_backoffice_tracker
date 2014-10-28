@@ -62,7 +62,7 @@ class API < Grape::API
 			return range if Time.at(to) < Time.at(from)
 			from = Time.at(from).to_date
 			to = Time.at(to).to_date
-			(from - to).to_i.times { |i|
+			(to - from).to_i.times { |i|
 				index = from + i.day
 				range[index.to_s] = OpenStruct.new(keys.merge(date: index.to_time.to_i))
 			}
