@@ -61,7 +61,7 @@ describe(Application) do
   end
   it("should update user email") do
     with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/update/email/#{token}", query: { user_id: @user.id, email: custom_email }) do |c|
+      put_request(path: "/api/users/profile/email/#{token}", query: { user_id: @user.id, email: custom_email }) do |c|
         expect(c.response_header.status).to eq(200)
       end
     end
@@ -93,9 +93,9 @@ describe(Application) do
       end
     end
   end
-  it("should set and display a disallowed fields for user") do
+  it("should set a disallowed fields for user") do
     with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/update/fields/#{token}", query: { is_admin: true, fields: @user.class.public_fields }) do |c|
+      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: @user.class.public_fields }) do |c|
         expect(c.response_header.status).to eq(200)
       end
     end

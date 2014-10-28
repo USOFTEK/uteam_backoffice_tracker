@@ -61,40 +61,34 @@ module APIv1
 							render_template("/api/v1/users/profile/fields", FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create)
 						}
 					end
+					
+					desc("Update editable fields")
+					params do
+						requires(:token)
+						requires(:fields, type: Array)
+					end
+					put("/:token") do
+						within_session {
+							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
+							object.disallowed_fields = params["fields"].map { |k| k.to_sym if User.public_fields.include?(k.to_sym) }.compact
+							object.save!
+						}
+					end
 
 				end
 
-				namespace(:update) do
-					namespace(:fields) do
-						desc("Update editable fields")
-						params do
-							requires(:token)
-							requires(:fields, type: Array)
-						end
-						put("/:token") do
-							within_session {
-								object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
-								object.disallowed_fields = params["fields"].map { |k| k.to_sym if User.public_fields.include?(k.to_sym) }.compact
-								object.save!
-							}
-						end
-
+				namespace(:email) do
+					desc("Update user email")
+					params do
+						requires(:token)
+						requires(:email)
 					end
-
-					namespace(:email) do
-						desc("Update user email")
-						params do
-							requires(:token)
-							requires(:email)
-						end
-						put("/:token") do
-							within_session { |current_user|
-								current_user.email = params["email"]
-								error!("Invalid email!", 400) unless current_user.valid?
-								current_user.save!
-							}
-						end
-
+					put("/:token") do
+						within_session { |current_user|
+							current_user.email = params["email"]
+							error!("Invalid email!", 400) unless current_user.valid?
+							current_user.save!
+						}
 					end
 
 				end
