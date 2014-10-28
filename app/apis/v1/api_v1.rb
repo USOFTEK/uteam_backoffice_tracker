@@ -125,7 +125,7 @@ module APIv1
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
 							range = make_date_range(from, to)
-							current_user.network_activities.where(per: from..to).order(per: :asc).group(:per).each { |record|
+							current_user.network_activities.where(per: from..to).order(per: :desc).group(:per).each { |record|
 								range[record.per_date] = OpenStruct.new({ sent: record.sent, received: record.received, date: record.at })
 							}
 							render_template("/api/v1/users/statistics/networks", range.values)
