@@ -36,6 +36,10 @@ class User < ActiveRecord::Base
 	scope(:disabled, -> { where(disable: true) })
 	scope(:active, -> { where(disable: false) })
 
+	def disabled?
+		disable
+	end
+
 	def authenticate pass
 		password == pass
 	end
