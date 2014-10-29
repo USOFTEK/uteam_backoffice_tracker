@@ -47,3 +47,6 @@ gem "grape-swagger"
 
 # bcrypt
 gem "bcrypt"
+
+# ActiveRecord Diff
+gem "activerecord-diff"

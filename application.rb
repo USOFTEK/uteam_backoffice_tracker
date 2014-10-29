@@ -10,7 +10,7 @@ require "grape-swagger"
 require "active_support/all"
 require "json"
 require "net/http"
-require 'ostruct'
+require "ostruct"
 
 # Load app
 require "#{File.dirname(__FILE__)}/app/apis/api.rb"

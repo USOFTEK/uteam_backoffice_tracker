@@ -1,9 +1,11 @@
 require "active_record"
 require "paper_trail"
 require "bcrypt"
+require "active_record/diff"
 
 class User < ActiveRecord::Base
 	include BCrypt
+	include ActiveRecord::Diff
 
 	has_paper_trail
 	
