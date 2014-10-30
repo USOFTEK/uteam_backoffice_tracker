@@ -101,7 +101,7 @@ describe(Application) do
         response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
         expect(response).to have_key("disallowed")
-        expect(response["disallowed"].size).to eq(@user.class.public_fields.size  )
+        expect(response["disallowed"].size).to eq(@user.class.public_fields.size)
       end
     end
   end

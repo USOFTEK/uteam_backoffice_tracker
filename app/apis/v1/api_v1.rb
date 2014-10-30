@@ -70,6 +70,7 @@ module APIv1
 							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
 							object.disallowed_fields = fields.values.map { |k| k.to_sym if User.public_fields.include?(k.to_sym) }.compact
 							object.save!
+							object.reload
 							render_template("/api/v1/users/profile/fields", OpenStruct.new(available: User.public_fields, disallowed: object.disallowed_fields))
 						}
 					end
