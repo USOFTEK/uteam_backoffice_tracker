@@ -95,10 +95,13 @@ describe(Application) do
       end
     end
   end
-  it("should set a disallowed fields for user") do
+  it("should set a disallowed fields for user and return it") do
     with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: @user.class.public_fields }) do |c|
+      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: Hash[@user.class.public_fields.map.with_index { |value, index| [index, value] }] }) do |c|
+        response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
+        expect(response).to have_key("disallowed")
+        expect(response["disallowed"].size).to eq(@user.class.public_fields.size  )
       end
     end
   end
