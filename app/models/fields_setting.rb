@@ -5,7 +5,7 @@ class FieldsSetting < ActiveRecord::Base
 	validates(:object, presence: true)
 
 	def disallowed_fields
-		@disallowed_fields ||= selected.split(",") rescue []
+		selected.split(",") rescue []
 	end
 
 	def disallowed_fields= fields
