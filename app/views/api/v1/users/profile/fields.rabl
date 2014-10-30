@@ -1,1 +1,1 @@
-attributes(:disallowed_fields)
+attributes(:available, :disallowed)

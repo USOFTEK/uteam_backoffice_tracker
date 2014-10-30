@@ -52,13 +52,9 @@ module APIv1
 				end
 
 				namespace(:fields) do
-					desc("Display allowed fields to update in user")
-					params do
-						requires(:token)
-					end
 					get("/:token") do
-						within_session { |current_user|
-							render_template("/api/v1/users/profile/fields", FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create)
+						within_session {
+							render_template("/api/v1/users/profile/fields", OpenStruct.new(available: User.public_fields, disallowed: FieldsSetting.where(object: User.to_s.downcase).first_or_create.disallowed_fields))
 						}
 					end
 					
@@ -69,9 +65,11 @@ module APIv1
 					end
 					put("/:token") do
 						within_session {
-							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
+							resource = User.to_s.downcase
+							object = FieldsSetting.where(object: resource).first_or_create
 							object.disallowed_fields = params["fields"].map { |k| k.to_sym if User.public_fields.include?(k.to_sym) }.compact
 							object.save!
+							render_template("/api/v1/users/profile/fields", FieldsSetting.where(object: resource.to_s.downcase).first_or_create)
 						}
 					end
 

@@ -88,8 +88,10 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response).to have_key("disallowed_fields")
-        expect(response["disallowed_fields"].empty?).to eq(true)
+        expect(response).to have_key("available")
+        expect(response["available"].size).to eq(@user.class.public_fields.size)
+        expect(response).to have_key("disallowed")
+        expect(response["disallowed"].size).to eq(0)
       end
     end
   end
@@ -104,8 +106,8 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response).to have_key("disallowed_fields")
-        expect(response["disallowed_fields"].size).to eq(@user.class.public_fields.count)
+        expect(response).to have_key("disallowed")
+        expect(response["disallowed"].size).to eq(@user.class.public_fields.count)
       end
     end
   end
