@@ -2,6 +2,7 @@ require "active_record"
 require "paper_trail"
 require "bcrypt"
 require "active_record/diff"
+require "date"
 
 class User < ActiveRecord::Base
 	include BCrypt
@@ -59,6 +60,18 @@ class User < ActiveRecord::Base
 
 	def self.public_fields
 		[:initials, :address_street, :address_build, :address_flat, :username]
+	end
+
+	def created
+		Time.at(created_at).to_i
+	end
+
+	def updated
+		Time.at(updated_at).to_i
+	end
+
+	def registered
+		DateTime.parse(registration.to_s).to_time.to_i
 	end
 
 end
