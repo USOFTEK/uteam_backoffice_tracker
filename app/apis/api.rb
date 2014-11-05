@@ -59,7 +59,7 @@ class API < Grape::API
 				auth.get(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
 					grape_error!("Authentication failue!", 401) if response.has_key?("error")
-					if eval(response["is_admin"])
+					if eval("#{response["is_admin"]}")
 						block.call if block_given?
 					else
 						user = ::User.find(response["user_id"].to_i)
