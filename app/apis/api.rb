@@ -13,6 +13,8 @@ end
 
 class API < Grape::API
 
+	$auth_server_api = ::Communicator.new(Configuration.auth_server)
+
 	rescue_from(ActiveRecord::RecordInvalid) { |e|
 		Rack::Response.new({
 			error: true,
@@ -48,14 +50,24 @@ class API < Grape::API
 			if Goliath.env == :test
 				params["is_admin"] ||= "false"
 				if eval(params["is_admin"]) || false
-					block.call
+					block.call if block_given?
 				else
 					user = ::User.find(params["user_id"] || nil)
 					unauthorized! unless user
 					block.call(user) if block_given?
 				end
       else
-      	
+				$auth_server_api.get_auth(token: params[:token]) do |response|
+					response = JSON.parse(response) rescue Hash.new
+					grape_error!("Authentication failue!", 401) if response.has_key?("error")
+					if eval("#{response["is_admin"]}")
+						block.call if block_given?
+					else
+						user = ::User.find(response["user_id"].to_i)
+						unauthorized! unless user
+						block.call(user) if block_given?
+					end
+				end
       end
 		end
 
