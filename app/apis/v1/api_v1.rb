@@ -39,15 +39,11 @@ module APIv1
 				end
 				put("/:token") do
 					within_session { |current_user|
-						begin
-							fields = FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create
-							attributes = params.reject { |k,v| !User.public_fields.include?(k.to_sym) || fields.disallowed_fields.include?(k) }.to_hash
-							grape_error!("Invalid fields or bad request!", 400) if attributes.empty?
-							current_user.assign_attributes(attributes)
-							current_user.save!
-						rescue ActiveRecord::RecordInvalid => invalid
-							grape_error!(invalid.record.errors.full_messages.join("; "), 400)
-						end
+						fields = FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create
+						attributes = params.reject { |k,v| !User.public_fields.include?(k.to_sym) || fields.disallowed_fields.include?(k) }.to_hash
+						grape_error!("Bad request!", 400) if attributes.empty?
+						current_user.assign_attributes(attributes)
+						current_user.save!
 					}
 				end
 
@@ -86,7 +82,6 @@ module APIv1
 					put("/:token") do
 						within_session { |current_user|
 							current_user.email = params["email"]
-							error!("Invalid email!", 400) unless current_user.valid?
 							current_user.save!
 						}
 					end
@@ -195,7 +190,9 @@ module APIv1
 				requires(:token)
 			end
 			get("/:token") do
-				render_template("/api/v1/tariffs/index", Tariff.all)
+				within_session {
+					render_template("/api/v1/tariffs/index", Tariff.all)
+				}
 			end
 
 		end

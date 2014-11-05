@@ -22,6 +22,8 @@ class User < ActiveRecord::Base
 
 	belongs_to(:tariff)
 
+	validates(:initials, presence: true)
+
 	validates(:username, uniqueness: true, presence: true)
 
 	validates(:password_hash, presence: true)

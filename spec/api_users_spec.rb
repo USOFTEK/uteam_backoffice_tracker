@@ -13,6 +13,14 @@ describe(Application) do
 
   before(:all) { @user = create(:user, password: user_password) }
 
+  it("should raise not found if token missed") do
+     with_api(Application, api_options) do
+      get_request(path: "/api/users/profile/", query: { user_id: @user.id }) do |c|
+        expect(c.response_header.status).to eq(404)
+      end
+    end
+  end
+
   it("should respond with user data") do
     with_api(Application, api_options) do
       post_request(path: "/api/users/check", query: { username: @user.username, password: user_password }) do |c|
@@ -21,6 +29,17 @@ describe(Application) do
       end
     end
   end
+
+  it("should raise unauthorized error if user not exists or invalid data") do
+    with_api(Application, api_options) do
+      post_request(path: "/api/users/check", query: { username: @user.username, password: "" }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("error")
+        expect(c.response_header.status).to eq(401)
+      end
+    end
+  end
+
   it("should respond with user profile within token") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }) do |c|
@@ -32,6 +51,17 @@ describe(Application) do
       end
     end
   end
+
+  it("should raise unauthorized in user profile within token with invalid user id") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/users/profile/#{token}", query: { user_id: 10 }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("error")
+        expect(c.response_header.status).to eq(401)
+      end
+    end
+  end
+
   it("should respond with user payments") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/billing/payments/#{token}", query: { user_id: @user.id }) do |c|
@@ -41,6 +71,7 @@ describe(Application) do
       end
     end
   end
+
   it("should respond with user fees") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/billing/fees/#{token}", query: { user_id: @user.id }) do |c|
@@ -50,15 +81,20 @@ describe(Application) do
       end
     end
   end
+
   it("should respond with user network statistics per 1 month") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, from: (Time.now - 1.month).to_i, to: Time.now.midnight + 1.day }) do |c|
+      from = Time.now.midnight - 1.month
+      to = from + 1.month
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, from: from.to_i, to: to.to_i }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
-        expect(response["netstats"].count).to eq(@user.network_activities.where(per: (Time.now.midnight - 1.month)..(Time.now.midnight + 1.day)).count)
+        size = to.to_date - from.to_date
+        expect(response["netstats"].count).to eq(size.to_i)
       end
     end
   end
+
   it("should update user email") do
     with_api(Application, api_options) do
       put_request(path: "/api/users/profile/email/#{token}", query: { user_id: @user.id, email: custom_email }) do |c|
@@ -66,6 +102,15 @@ describe(Application) do
       end
     end
   end
+
+  it("should raise invalid user email") do
+    with_api(Application, api_options) do
+      put_request(path: "/api/users/profile/email/#{token}", query: { user_id: @user.id, email: "test.com" }) do |c|
+        expect(c.response_header.status).to eq(400)
+      end
+    end
+  end
+
   it("should unset user password") do
     with_api(Application, api_options) do
       delete_request(path: "/api/users/profile/password/#{token}", query: { user_id: @user.id }) do |c|
@@ -75,6 +120,7 @@ describe(Application) do
       end
     end
   end
+
   it("should update user_profile with custom data by public fields") do
     with_api(Application, api_options) do
       put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }.merge!(custom_data)) do |c|
@@ -84,6 +130,23 @@ describe(Application) do
       end
     end
   end
+
+  it("should raise bad request user_profile without fields") do
+    with_api(Application, api_options) do
+      put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }) do |c|
+        expect(c.response_header.status).to eq(400)
+      end
+    end
+  end
+
+  it("should raise bad request user_profile without fields") do
+    with_api(Application, api_options) do
+      put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }.merge!(initials: "")) do |c|
+        expect(c.response_header.status).to eq(400)
+      end
+    end
+  end
+
   it("should respond with empty disallowed fields") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
@@ -95,6 +158,7 @@ describe(Application) do
       end
     end
   end
+
   it("should set a disallowed fields for user and return it") do
     with_api(Application, api_options) do
       put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: Hash[@user.class.public_fields.map.with_index { |value, index| [index, value] }] }) do |c|
@@ -105,6 +169,7 @@ describe(Application) do
       end
     end
   end
+
   it("should respond with disallowed fields for user") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|

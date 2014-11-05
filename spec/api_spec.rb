@@ -4,7 +4,7 @@ describe(Application) do
 
   let(:api_options) { { :config => File.expand_path(File.join(File.dirname(__FILE__), "..", "config", "application.rb")) } }
 
-  it("should respond with tariffs list") do
+  it("should respond with json actions list") do
     with_api(Application, api_options) do
       get_request(path: "/api/json_actions") do |c|
         response = JSON.parse(c.response)
@@ -12,6 +12,7 @@ describe(Application) do
       end
     end
   end
+  
   it("should respond with swagger doc") do
   	with_api(Application, api_options) do
       get_request(path: "/docs") do |c|

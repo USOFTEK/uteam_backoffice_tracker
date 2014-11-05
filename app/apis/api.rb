@@ -13,6 +13,22 @@ end
 
 class API < Grape::API
 
+	rescue_from(ActiveRecord::RecordInvalid) { |e|
+		Rack::Response.new({
+			error: true,
+			message: e.record.errors.full_messages.join("; "),
+			status: 400
+		}.to_json, 400).finish
+	}
+
+	rescue_from(ActiveRecord::RecordNotFound) { |e|
+		Rack::Response.new({
+			error: true,
+			message: "Authentication failue!",
+			status: 401
+		}.to_json, 401).finish
+	}
+
 	rescue_from(:all) { |e|
 		begin
 			status, message = e.status, e.message
@@ -30,10 +46,11 @@ class API < Grape::API
 		# Session helper
 		def within_session &block
 			if Goliath.env == :test
-				if params["is_admin"] || false
+				params["is_admin"] ||= "false"
+				if eval(params["is_admin"]) || false
 					block.call
 				else
-					user = ::User.find(params["user_id"] || nil) rescue nil
+					user = ::User.find(params["user_id"] || nil)
 					unauthorized! unless user
 					block.call(user) if block_given?
 				end
@@ -42,10 +59,10 @@ class API < Grape::API
 				auth.get(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
 					grape_error!("Authentication failue!", 401) if response.has_key?("error")
-					if response["is_admin"]
+					if eval(response["is_admin"])
 						block.call if block_given?
 					else
-						user = ::User.find(response["user_id"].to_i) rescue nil
+						user = ::User.find(response["user_id"].to_i)
 						unauthorized! unless user
 						block.call(user) if block_given?
 					end
