@@ -1,4 +1,4 @@
-attributes(:id, :username, :disabled?, :ip, :email, :netmask, :speed, :registered, :initials, :credit, :created, :updated)
+attributes(:id, :username, :disabled, :ip, :email, :netmask, :speed, :registered, :initials, :credit, :created, :updated)
 
 child(:tariff) { attributes(:id, :name, :month_fee, :day_fee) }
 
