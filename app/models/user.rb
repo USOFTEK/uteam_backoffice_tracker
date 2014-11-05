@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
 
 	def credit round = 2
 		@credit = billing.deposit - tariff.month_fee
-		return @credit < 0 ? @credit.round(round) : 0
+		return @credit > 0 ? @credit.round(round) : 0
 	end
 
 	def self.public_fields
