@@ -34,26 +34,27 @@ class API < Grape::API
 					block.call
 				else
 					user = ::User.find(params["user_id"] || nil) rescue nil
-					grape_error!("Unauthorized!", 401) unless user
+					unauthorized! unless user
 					block.call(user) if block_given?
 				end
       else
       	auth = Communicator.new(env["config"]["auth.server"]["authorization"])
 				auth.get(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
-					if response.has_key?("is_admin")
-						if response["is_admin"]
-							block.call if block_given?
-						else
-							user = ::User.find(response["user_id"].to_i) rescue nil
-							grape_error!("Unauthorized!", 401) unless user
-							block.call(user) if block_given?
-						end
+					grape_error!("Authentication failue!", 401) if response.has_key?("error")
+					if response["is_admin"]
+						block.call if block_given?
 					else
-						grape_error!("Authentication failue!", 401)
+						user = ::User.find(response["user_id"].to_i) rescue nil
+						unauthorized! unless user
+						block.call(user) if block_given?
 					end
 				end
       end
+		end
+
+		def unauthorized!
+			grape_error!("Unauthorized!", 401)
 		end
 
 		# Date range of statistics helper
