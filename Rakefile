@@ -85,6 +85,8 @@ end
 # Testing
 require "rspec/core/rake_task"
 
-RSpec::Core::RakeTask.new("spec")
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = %w[-f JUnit -o test_results.xml]
+end
 
 task :default => ["db:abort_if_pending_migrations", :spec]
