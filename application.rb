@@ -12,11 +12,11 @@ require "json"
 require "net/http"
 require "ostruct"
 
-# Load configs
-require "#{File.dirname(__FILE__)}/config/configuration.rb"
-
 # Load libs
 Dir.glob("#{File.dirname(__FILE__)}/lib/**/*.rb").each { |rb| require rb }
+
+# Load configs
+require "#{File.dirname(__FILE__)}/config/configuration.rb"
 
 # Load app
 require "#{File.dirname(__FILE__)}/app/apis/api.rb"
