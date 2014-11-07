@@ -1,1 +1,1 @@
-attributes(:availiable)
+attributes(:available)

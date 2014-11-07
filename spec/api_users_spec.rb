@@ -150,9 +150,9 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response).to have_key("availiable")
-        expect(response["availiable"].size).to eq(User.public_fields.size)
-        build = response["availiable"].map { |e| e.pop }.uniq.compact
+        expect(response).to have_key("available")
+        expect(response["available"].size).to eq(User.public_fields.size)
+        build = response["available"].map { |e| e.pop }.uniq.compact
         expect(build.size).to eq(1)
         expect(build.shift).to eq(true)
       end
@@ -164,9 +164,9 @@ describe(Application) do
       put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: { "0" => @user.class.public_fields.sample } }) do |c|
         response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
-        expect(response).to have_key("availiable")
-        expect(response["availiable"].size).to eq(@user.class.public_fields.size)
-        build = response["availiable"].map { |e| e.pop }.uniq.compact
+        expect(response).to have_key("available")
+        expect(response["available"].size).to eq(@user.class.public_fields.size)
+        build = response["available"].map { |e| e.pop }.uniq.compact
         expect(build.size).to eq(2)
         expect(build).to contain_exactly(true, false)
       end
@@ -178,9 +178,9 @@ describe(Application) do
       put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: Hash[@user.class.public_fields.map.with_index { |value, index| [index, value] }] }) do |c|
         response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
-        expect(response).to have_key("availiable")
-        expect(response["availiable"].size).to eq(@user.class.public_fields.size)
-        build = response["availiable"].map { |e| e.pop }.uniq.compact
+        expect(response).to have_key("available")
+        expect(response["available"].size).to eq(@user.class.public_fields.size)
+        build = response["available"].map { |e| e.pop }.uniq.compact
         expect(build.size).to eq(1)
         expect(build.shift).to eq(false)
       end
@@ -191,9 +191,9 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
-        expect(response).to have_key("availiable")
-        expect(response["availiable"].size).to eq(User.public_fields.size)
-        build = response["availiable"].map { |e| e.pop }.uniq.compact
+        expect(response).to have_key("available")
+        expect(response["available"].size).to eq(User.public_fields.size)
+        build = response["available"].map { |e| e.pop }.uniq.compact
         expect(build.size).to eq(1)
         expect(build.shift).to eq(false)
       end
