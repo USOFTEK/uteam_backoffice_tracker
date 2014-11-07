@@ -1,1 +1,1 @@
-attributes(:available, :disallowed)
+attributes(:available)
