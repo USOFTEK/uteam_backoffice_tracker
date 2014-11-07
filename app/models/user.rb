@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.public_fields
-		[:initials, :address_street, :address_build, :address_flat, :username]
+		[:initials, :address_street, :address_build, :address_flat]
 	end
 
 	def created
@@ -74,6 +74,10 @@ class User < ActiveRecord::Base
 
 	def registered
 		DateTime.parse(registration.to_s).to_time.to_i
+	end
+
+	def self.availiable_fields disallowed = []
+		Hash[public_fields.map { |f| [f, !disallowed.include?(f.to_s)] }] rescue {}
 	end
 
 end
