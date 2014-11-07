@@ -66,7 +66,7 @@ module APIv1
 							fields = eval(params[:fields]) unless fields.is_a?(Hash)
 							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
 							object.disallowed_fields = fields.values.map { |k|
-																						k.to_sym if User.public_fields.include?(k.to_sym)
+																						k if User.public_fields.include?(k.to_sym)
 																					}.compact
 							object.save!
 							object.reload
