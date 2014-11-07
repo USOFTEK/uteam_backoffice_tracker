@@ -2,6 +2,7 @@ require "rubygems"
 require "bundler/setup"
 require "goliath/test_helper"
 require "em-synchrony/em-http"
+require 'yarjuf'
 require "factory_girl"
 require "json"
 require "database_cleaner"
