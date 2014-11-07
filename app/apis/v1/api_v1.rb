@@ -65,9 +65,7 @@ module APIv1
 							fields = params[:fields] || Hash.new
 							fields = eval(params[:fields]) unless fields.is_a?(Hash)
 							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
-							object.disallowed_fields = fields.values.map { |k|
-																						k if User.public_fields.include?(k.to_sym)
-																					}.compact
+							object.disallowed_fields = fields.values.select { |k| User.public_fields.include?(k.to_sym) }.compact
 							object.save!
 							object.reload
 							render_template("/api/v1/users/profile/fields", OpenStruct.new({available: User.available_fields(object.disallowed_fields)}))
