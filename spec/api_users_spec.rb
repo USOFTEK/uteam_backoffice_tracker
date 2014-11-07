@@ -1,4 +1,3 @@
-require_relative "spec_helper"
 
 def user_password
   "my_user_password"
