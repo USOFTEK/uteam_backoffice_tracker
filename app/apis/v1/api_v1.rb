@@ -51,7 +51,7 @@ module APIv1
 					get("/:token") do
 						within_session {
 							fields = FieldsSetting.where(object: User.to_s.downcase).first_or_create
-							render_template("/api/v1/users/profile/fields", OpenStruct.new({availiable: User.availiable_fields(fields.disallowed_fields)}))
+							render_template("/api/v1/users/profile/fields", OpenStruct.new({available: User.available_fields(fields.disallowed_fields)}))
 						}
 					end
 					
@@ -70,7 +70,7 @@ module APIv1
 																					}.compact
 							object.save!
 							object.reload
-							render_template("/api/v1/users/profile/fields", OpenStruct.new({availiable: User.availiable_fields(object.disallowed_fields)}))
+							render_template("/api/v1/users/profile/fields", OpenStruct.new({available: User.available_fields(object.disallowed_fields)}))
 						}
 					end
 

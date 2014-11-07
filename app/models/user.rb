@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
 		DateTime.parse(registration.to_s).to_time.to_i
 	end
 
-	def self.availiable_fields disallowed = []
+	def self.available_fields disallowed = []
 		Hash[public_fields.map { |f| [f, !disallowed.include?(f.to_s)] }] rescue {}
 	end
 
