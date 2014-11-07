@@ -17,7 +17,7 @@ set :ssh_options, {
 
 set :project_path, "/var/www/cabinet/tracker/current"
 set :main_path, "/var/www/cabinet/main/current"
-set :env_rvm, "PATH=$PATH:~/.rvm/bin:~/.rvm/rubies/ruby-1.9.3-p547/bin:~/.rvm/gems/ruby-1.9.3-p547@global/bin &&"
+set :env_rvm, "PATH=$PATH:~/.rvm/bin:~/.rvm/rubies/ruby-2.1.0/bin:~/.rvm/gems/ruby-2.1.0@global/bin &&"
 
 namespace :goliath do
   desc 'Stop Goliath'
