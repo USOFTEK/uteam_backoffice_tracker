@@ -117,7 +117,7 @@ module APIv1
 					get("/:token") do
 						within_session { |current_user|
 							params[:date_from] ||= Time.now.midnight - 1.month
-							params[:date_to] ||= params[:date_from] + 1.month > Time.now ? Time.now : params[:date_from] + 1.month
+							params[:date_to] ||= params[:date_from] + 1.month > Time.now.to_i ? Time.now : params[:date_from] + 1.month
 							from = Time.at(params[:date_from])
 							to = Time.at(params[:date_to])
 							range = make_date_range(from, to)
