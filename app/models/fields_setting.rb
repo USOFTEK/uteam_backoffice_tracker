@@ -9,7 +9,7 @@ class FieldsSetting < ActiveRecord::Base
 	end
 
 	def disallowed_fields= fields
-		self.selected = fields.empty? ? nil : disallowed_fields.concat(fields.map(&:to_s)).uniq.join(",")
+		self.selected = fields.empty? ? nil : fields.uniq.join(",")
 	end
 
 end
