@@ -1,7 +1,10 @@
-attributes(:id, :username, :disable, :ip, :email, :address_street, :address_build, :address_flat, :netmask, :speed, :registered, :initials, :credit, :created, :updated)
+attributes(:id, :username, :disable, :ip, :email, :address_street, :address_build, 
+						:address_flat, :netmask, :speed, :registered, :initials, :credit, :created, :updated)
 
 child(:tariff) { attributes(:id, :name, :month_fee, :day_fee) }
 
 child(:billing) { attributes(:id, :deposit) }
 
-child(:phones) { attributes(:id, :number, :is_mobile, :is_main) }
+child(:mobile_phone => :mobile_phone) { attributes(:number) }
+
+child(:primary_phone => :primary_phone) { attributes(:number) }

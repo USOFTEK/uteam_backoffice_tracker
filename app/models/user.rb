@@ -12,7 +12,11 @@ class User < ActiveRecord::Base
 	
 	has_one(:billing, dependent: :destroy)
 
-	has_many(:phones, dependent: :destroy)
+	# has_many(:phones, dependent: :destroy)
+
+	has_one(:mobile_phone, -> { where(is_mobile: true) }, class_name: "Phone")
+
+	has_one(:primary_phone, -> { where(is_main: true) }, class_name: "Phone")
 
 	has_many(:network_activities, dependent: :destroy)
 	

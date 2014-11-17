@@ -24,7 +24,9 @@ FactoryGirl.define {
 
 		after(:create) { |user,evaluator|
 			user.billing = create(:billing_with_statistics, user: user)
-			user.phones << create_list(:phone, evaluator.phones_count, user: user, is_mobile: [true, false].sample, is_main: [true, false].sample)
+			# user.phones << create_list(:phone, evaluator.phones_count, user: user, is_mobile: [true, false].sample, is_main: [true, false].sample)
+			user.mobile_phone = create(:phone, user: user, is_mobile: true, is_main: false)
+			user.primary_phone = create(:phone, user: user, is_mobile: false, is_main: true)
 			user.network_activities << create_list(:network_activity, evaluator.network_activities_count, user: user)
 		}
 

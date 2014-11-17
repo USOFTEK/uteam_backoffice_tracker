@@ -46,7 +46,10 @@ describe(Application) do
         expect(response["id"]).to eq(@user.id)
         expect(response).to have_key("tariff")
         expect(response).to have_key("billing")
-        expect(response).to have_key("phones")
+        expect(response).to have_key("mobile_phone")
+        expect(response["mobile_phone"]["number"]).to eq(@user.mobile_phone.number)
+        expect(response).to have_key("primary_phone")
+        expect(response["primary_phone"]["number"]).to eq(@user.primary_phone.number)
       end
     end
   end
