@@ -1,3 +1,6 @@
+require "rubygems"
+require "active_support/all"
+
 module APIv1
 	# Users
 	class Users < Grape::API
@@ -111,20 +114,24 @@ module APIv1
 					desc("Load user network statistic")
 					params do
 						requires(:token)
-						optional(:date_from, type: Integer)
-						optional(:date_to, type: Integer)
+						optional(:year, type: Integer, desc: "Year to display graph. Default: current year. Value exmpl: 2014.")
+						optional(:month, type: Integer, desc: "Month of the year. Default: none, display by year months ranges. If month present - display graph in order of month weeks.")
 					end
 					get("/:token") do
 						within_session { |current_user|
-							params[:date_from] ||= Time.now.midnight - 1.month
-							params[:date_to] ||= (params[:date_from] + 1.month).to_i > Time.now.to_i ? Time.now : params[:date_from] + 1.month
-							from = Time.at(params[:date_from])
-							to = Time.at(params[:date_to])
-							range = make_date_range(from, to)
-							current_user.network_activities.where(per: from..to).order(per: :desc).group(:per).each { |record|
-								range[record.per_date] = OpenStruct.new({ sent: record.sent, received: record.received, date: record.at })
+							to_object = Array.new
+
+							params[:year] ||= Time.now.to_date.year
+
+							params[:year] = current_user.registration.year if params[:year] > current_user.registration.year
+
+							ranges = params.has_key?(:month) ? month_weeks_ranges(params[:year], params[:month]) : year_month_ranges(params[:year])
+
+							ranges.each { |range|
+								records = current_user.network_activities.where(per: range)
+								to_object << OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), date: Date.parse(range.first).to_time.to_i }) if records.any?
 							}
-							render_template("/api/v1/users/statistics/networks", range.values)
+							render_template("/api/v1/users/statistics/networks", to_object)
 							# render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
 						}
 					end

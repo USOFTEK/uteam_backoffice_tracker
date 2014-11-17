@@ -1,3 +1,6 @@
+require "rubygems"
+require "active_support/all"
+
 # Load app
 Dir.glob("#{File.join(File.dirname(__FILE__), "..")}/**/*.rb").each { |f| require f }
 
@@ -89,7 +92,7 @@ class API < Grape::API
 		end
 
 		# Rabl render helper
-		def render_template(path, object, status = 200,  args = {})
+		def render_template path, object, status = 200,  args = {}
 			format = args[:format] || :json
 			Rabl::Renderer.new(path, object, { format: format }).render
 		end
@@ -97,6 +100,21 @@ class API < Grape::API
 		# Grape error helper
 		def grape_error! message, status = 401
 			raise ::GrapeError.new(status), message
+		end
+
+		# Make month weeks ranges
+		def month_weeks_ranges year, month
+			date = Date.new(year, month)
+			sundays = (date.beginning_of_month..date.end_of_month).select(&:sunday?)
+			sundays.push([date.beginning_of_month, date.end_of_month])
+			sundays.flatten.uniq.sort.to_weeks_ranges
+		end
+
+		# Make year months ranges
+		def year_month_ranges year
+			from = Date.new(year, Time.now.month) - 1.year
+			to = Date.new(year, Time.now.month)
+			(from..to).group_by(&:month).map { |n,v| v.first.beginning_of_month.to_s..v.first.end_of_month.to_s }
 		end
 
 	}
