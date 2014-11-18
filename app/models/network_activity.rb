@@ -8,6 +8,10 @@ class NetworkActivity < ActiveRecord::Base
 
 	validates(:received, presence: true, numericality: true)
 
+	alias_attribute(:from, :at)
+
+	alias_attribute(:to, :at)
+
 	def at
 		Time.at(per).to_i
 	end

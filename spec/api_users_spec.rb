@@ -84,9 +84,19 @@ describe(Application) do
     end
   end
 
-  it("should respond with user network statistics per month") do
+  it("should respond with user network statistics in days range") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id }) do |c|
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, from: 0 }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("netstats")
+        expect(response["netstats"]).not_to be_empty
+      end
+    end
+  end
+
+  it("should respond with user network statistics per month in weeks range") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: 9 }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
         expect(response["netstats"]).to be_an(Array)
@@ -95,9 +105,9 @@ describe(Application) do
     end
   end
 
-  it("should respond with user network statistics per month") do
+  it("should respond with user network statistics per year") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: 9 }) do |c|
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
         expect(response["netstats"]).to be_an(Array)

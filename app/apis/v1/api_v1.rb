@@ -116,21 +116,32 @@ module APIv1
 						requires(:token)
 						optional(:year, type: Integer, desc: "Year to display graph. Default: current year. Value exmpl: 2014.")
 						optional(:month, type: Integer, desc: "Month of the year. Default: none, display by year months ranges. If month present - display graph in order of month weeks.")
+						optional(:from, type: Integer, desc: "Display statistics per date from this date. Default: from beginning.")
+						optional(:to, type: Integer, desc: "Display statistics per date till this date. Default: current day midnight.")
 					end
 					get("/:token") do
 						within_session { |current_user|
 							to_object = Array.new
+							
+							if params.has_key?(:from)
+								params[:to] ||= Time.now.midnight.to_i
+								params[:from] ||= 0
 
-							params[:year] ||= Time.now.to_date.year
+								to_object = current_user.network_activities.where(per: Time.at(params[:from]).to_s..Time.at(params[:to]).to_s).group(:per).order(created_at: :asc)
 
-							params[:year] = current_user.registration.year if params[:year] > current_user.registration.year
+							else
 
-							ranges = params.has_key?(:month) ? month_weeks_ranges(params[:year], params[:month]) : year_month_ranges(params[:year])
+								params[:year] ||= Time.now.to_date.year
 
-							ranges.each { |range|
-								records = current_user.network_activities.where(per: range)
-								to_object << OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), date: Date.parse(range.first).to_time.to_i }) if records.any?
-							}
+								params[:year] = current_user.registration.year if params[:year] > current_user.registration.year
+
+								ranges = params.has_key?(:month) ? month_weeks_ranges(params[:year], params[:month]) : year_month_ranges(params[:year])
+
+								ranges.each { |range|
+									records = current_user.network_activities.where(per: range)
+									to_object << OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), from: Date.parse(range.first).to_time.to_i, to: Date.parse(range.last).to_time.to_i }) if records.any?
+								}
+							end
 							render_template("/api/v1/users/statistics/networks", to_object)
 							# render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
 						}
