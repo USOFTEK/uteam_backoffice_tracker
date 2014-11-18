@@ -14,9 +14,9 @@ class User < ActiveRecord::Base
 
 	# has_many(:phones, dependent: :destroy)
 
-	has_one(:mobile_phone, -> { where(is_mobile: true) }, class_name: "Phone")
+	has_one(:mobile_phone, -> { where(is_mobile: true) }, class_name: "Phone", dependent: :destroy)
 
-	has_one(:primary_phone, -> { where(is_main: true) }, class_name: "Phone")
+	has_one(:primary_phone, -> { where(is_main: true) }, class_name: "Phone", dependent: :destroy)
 
 	has_many(:network_activities, dependent: :destroy)
 	
@@ -43,6 +43,10 @@ class User < ActiveRecord::Base
 	scope(:disabled, -> { where(disable: true) })
 	scope(:active, -> { where(disable: false) })
 
+	def chat_notifications_allowed?
+		chat_notification
+	end
+
 	def disabled?
 		disable
 	end
@@ -65,7 +69,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.public_fields
-		[:initials, :address_street, :address_build, :address_flat]
+		[:chat_notification]
 	end
 
 	def created

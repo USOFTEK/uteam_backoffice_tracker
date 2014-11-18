@@ -13,6 +13,7 @@ FactoryGirl.define {
 		netmask { Faker::Internet.ip_v4_address }
 		registration { Faker::Time.between(rand(366).day.ago, Time.now) }
 		speed { "#{Faker::Number.number(3)} Mb/s" }
+		chat_notification(true)
 
 		tariff
 

@@ -8,7 +8,7 @@ describe(Application) do
   let(:api_options) { { :config => File.expand_path(File.join(File.dirname(__FILE__), "..", "config", "application.rb")) } }
   let(:token) { Faker::Internet.ip_v6_address.tr(":", "") }
   let(:custom_email) { Faker::Internet.email }
-  let(:custom_data) { { initials: Faker::Name.name, created_at: Time.now } }
+  let(:custom_data) { { chat_notification: false, created_at: Time.now } }
 
   before(:all) { @user = create(:user, password: user_password) }
 
@@ -136,7 +136,7 @@ describe(Application) do
     with_api(Application, api_options) do
       put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }.merge!(custom_data)) do |c|
         @user.reload
-        expect(@user.initials).to eq(custom_data[:initials])
+        expect(@user.chat_notification).to eq(custom_data[:chat_notification])
         expect(Time.at(@user.created_at).to_i).not_to eq(Time.at(custom_data[:created_at]).to_i)
       end
     end
@@ -179,8 +179,7 @@ describe(Application) do
         expect(response).to have_key("available")
         expect(response["available"].size).to eq(@user.class.public_fields.size)
         build = response["available"].map { |e| e.pop }.uniq.compact
-        expect(build.size).to eq(2)
-        expect(build).to contain_exactly(true, false)
+        expect(build.size).to eq(1)
       end
     end
   end
