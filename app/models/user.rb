@@ -43,6 +43,8 @@ class User < ActiveRecord::Base
 	scope(:disabled, -> { where(disable: true) })
 	scope(:active, -> { where(disable: false) })
 
+	accepts_nested_attributes_for(:mobile_phone)
+
 	def chat_notifications_allowed?
 		chat_notification
 	end
@@ -69,7 +71,7 @@ class User < ActiveRecord::Base
 	end
 
 	def self.public_fields
-		[:chat_notification]
+		[:chat_notification, :mobile_phone_attributes]
 	end
 
 	def created

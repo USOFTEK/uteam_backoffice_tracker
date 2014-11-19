@@ -8,12 +8,12 @@ describe(Application) do
   let(:api_options) { { :config => File.expand_path(File.join(File.dirname(__FILE__), "..", "config", "application.rb")) } }
   let(:token) { Faker::Internet.ip_v6_address.tr(":", "") }
   let(:custom_email) { Faker::Internet.email }
-  let(:custom_data) { { chat_notification: false, created_at: Time.now } }
+  let(:custom_data) { { chat_notification: false, created_at: Time.now, "mobile_phone_attributes[number]" => Faker::PhoneNumber.cell_phone } }
 
   before(:all) { @user = create(:user, password: user_password) }
 
   it("should raise not found if token missed") do
-     with_api(Application, api_options) do
+    with_api(Application, api_options) do
       get_request(path: "/api/users/profile/", query: { user_id: @user.id }) do |c|
         expect(c.response_header.status).to eq(404)
       end
@@ -148,35 +148,33 @@ describe(Application) do
         @user.reload
         expect(@user.chat_notification).to eq(custom_data[:chat_notification])
         expect(Time.at(@user.created_at).to_i).not_to eq(Time.at(custom_data[:created_at]).to_i)
+        expect(@user.mobile_phone.number).to eq(custom_data["mobile_phone_attributes[number]"])
       end
     end
   end
 
-  it("should raise bad request user_profile without fields") do
-    with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }) do |c|
-        expect(c.response_header.status).to eq(400)
-      end
-    end
-  end
-
-  it("should raise bad request user_profile without fields") do
-    with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }.merge!(initials: "")) do |c|
-        expect(c.response_header.status).to eq(400)
-      end
-    end
-  end
-
-  it("should respond all public fields and they must be allowed") do
+  it("should respond with user public fields within user session token") do
     with_api(Application, api_options) do
       get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("available")
-        expect(response["available"].size).to eq(User.public_fields.size)
-        build = response["available"].map { |e| e.pop }.uniq.compact
-        expect(build.size).to eq(1)
-        expect(build.shift).to eq(true)
+      end
+    end
+  end
+
+  it("should respond with user public fields within admin session token") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("available")
+      end
+    end
+  end
+
+  it("should raise bad request on update user profile without fields") do
+    with_api(Application, api_options) do
+      put_request(path: "/api/users/profile/#{token}", query: { user_id: @user.id }) do |c|
+        expect(c.response_header.status).to eq(400)
       end
     end
   end
@@ -187,36 +185,37 @@ describe(Application) do
         response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
         expect(response).to have_key("available")
-        expect(response["available"].size).to eq(@user.class.public_fields.size)
-        build = response["available"].map { |e| e.pop }.uniq.compact
-        expect(build.size).to eq(1)
+        expect(response["available"].values).to contain_exactly(true, false)
       end
     end
   end
 
-  it("should set all public fields as disallowed for user and return it") do
+  it("should raise permission denied for user avaliable fields for update") do
     with_api(Application, api_options) do
-      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: Hash[@user.class.public_fields.map.with_index { |value, index| [index, value] }] }) do |c|
+      put_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id, fields: Hash[@user.class.public_fields.each_with_index.map { |e,i| [i,e.to_s] }] }) do |c|
         response = JSON.parse(c.response)
-        expect(c.response_header.status).to eq(200)
-        expect(response).to have_key("available")
-        expect(response["available"].size).to eq(@user.class.public_fields.size)
-        build = response["available"].map { |e| e.pop }.uniq.compact
-        expect(build.size).to eq(1)
-        expect(build.shift).to eq(false)
+        expect(response).to have_key("error")
+        expect(response["status"]).to eq(401)
       end
     end
   end
 
-  it("should respond user avaliable fields for update and all are disallowed") do
+  it("should update user avaliable fields as disallowed and return") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/profile/fields/#{token}", query: { user_id: @user.id }) do |c|
+      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true, fields: Hash[@user.class.public_fields.each_with_index.map { |e,i| [i,e.to_s] }] }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("available")
-        expect(response["available"].size).to eq(User.public_fields.size)
-        build = response["available"].map { |e| e.pop }.uniq.compact
-        expect(build.size).to eq(1)
-        expect(build.shift).to eq(false)
+        expect(response["available"].values.uniq).to contain_exactly(false)
+      end
+    end
+  end
+
+  it("should allow all user public fields to update") do
+    with_api(Application, api_options) do
+      put_request(path: "/api/users/profile/fields/#{token}", query: { is_admin: true }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("available")
+        expect(response["available"].values.uniq).to contain_exactly(true)
       end
     end
   end

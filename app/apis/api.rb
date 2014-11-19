@@ -49,29 +49,28 @@ class API < Grape::API
 
 	helpers {
 		# Session helper
-		def within_session &block
+		def within_session rule = nil, &block
+			user = nil
 			if Goliath.env == :test
-				params["is_admin"] ||= "false"
-				if eval(params["is_admin"]) || false
-					block.call if block_given?
-				else
-					user = ::User.find(params["user_id"] || nil)
+				params[:is_admin] ||= false
+				grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(params[:is_admin].to_s)
+				unless eval(params[:is_admin].to_s)
+					user = ::User.find(params[:user_id] || nil)
 					unauthorized! unless user
-					block.call(user) if block_given?
 				end
-      else
+				block.call(user) if block_given?
+			else
 				$auth_server_api.get_auth(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
 					grape_error!("Authentication failue!", 401) if response.has_key?("error")
-					if eval("#{response["is_admin"]}")
-						block.call if block_given?
-					else
+					grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(params["is_admin"].to_s)
+					unless eval(response["is_admin"].to_s)
 						user = ::User.find(response["user_id"].to_i)
 						unauthorized! unless user
-						block.call(user) if block_given?
 					end
+					block.call(user) if block_given?
 				end
-      end
+			end
 		end
 
 		def unauthorized!

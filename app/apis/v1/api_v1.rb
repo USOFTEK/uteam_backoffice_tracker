@@ -31,7 +31,7 @@ module APIv1
 					requires(:token)
 				end
 				get("/:token") do
-					within_session { |current_user|
+					within_session(false) { |current_user|
 						render_template("/api/v1/users/show", current_user)
 					}
 				end
@@ -39,9 +39,13 @@ module APIv1
 				desc("Update user profile by allowed fields")
 				params do
 					requires(:token)
+					group(:mobile_phone_attributes, type: Hash) do
+						requires(:number, type: String, desc: "Mobile phone number.")
+					end
+					optional(:chat_notification, type: Boolean, desc: "Allow/disallow chat notification.")
 				end
 				put("/:token") do
-					within_session { |current_user|
+					within_session(false) { |current_user|
 						fields = FieldsSetting.where(object: current_user.class.to_s.downcase).first_or_create
 						attributes = params.reject { |k,v| !User.public_fields.include?(k.to_sym) || fields.disallowed_fields.include?(k) }.to_hash
 						grape_error!("Bad request!", 400) if attributes.empty?
@@ -57,20 +61,18 @@ module APIv1
 							render_template("/api/v1/users/profile/fields", OpenStruct.new({available: User.available_fields(fields.disallowed_fields)}))
 						}
 					end
-					
+
 					desc("Update editable fields")
 					params do
 						requires(:token)
 						optional(:fields)
 					end
 					put("/:token") do
-						within_session {
+						within_session(true) {
 							fields = params[:fields] || Hash.new
 							fields = eval(params[:fields]) unless fields.is_a?(Hash)
 							object = FieldsSetting.where(object: User.to_s.downcase).first_or_create
 							object.disallowed_fields = fields.values.select { |k| User.public_fields.include?(k.to_sym) }.compact
-							object.save!
-							object.reload
 							render_template("/api/v1/users/profile/fields", OpenStruct.new({available: User.available_fields(object.disallowed_fields)}))
 						}
 					end
@@ -84,7 +86,7 @@ module APIv1
 						requires(:email)
 					end
 					put("/:token") do
-						within_session { |current_user|
+						within_session(false) { |current_user|
 							current_user.email = params["email"]
 							current_user.save!
 						}
@@ -98,7 +100,7 @@ module APIv1
 						requires(:token)
 					end
 					delete("/:token") do
-						within_session { |current_user|
+						within_session(false) { |current_user|
 							current_user.password = ""
 							current_user.save!
 						}
@@ -120,7 +122,7 @@ module APIv1
 						optional(:to, type: Integer, desc: "Display statistics per date till this date. Default: current day midnight.")
 					end
 					get("/:token") do
-						within_session { |current_user|
+						within_session(false) { |current_user|
 							to_object = Array.new
 							
 							if params.has_key?(:from)
@@ -161,7 +163,7 @@ module APIv1
 						optional(:date_to, type: Integer)
 					end
 					get("/:token") do
-						within_session { |current_user|
+						within_session(false) { |current_user|
 							params[:date_from] ||= 0
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
@@ -179,7 +181,7 @@ module APIv1
 						optional(:date_to, type: Integer)
 					end
 					get("/:token") do
-						within_session { |current_user|
+						within_session(false) { |current_user|
 							params[:date_from] ||= 0
 							params[:date_to] ||= Time.now.midnight + 1.day
 							from = Time.at(params[:date_from])
