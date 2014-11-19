@@ -63,7 +63,7 @@ class API < Grape::API
 				$auth_server_api.get_auth(token: params[:token]) do |response|
 					response = JSON.parse(response) rescue Hash.new
 					grape_error!("Authentication failue!", 401) if response.has_key?("error")
-					grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(params["is_admin"].to_s)
+					grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(response["is_admin"].to_s)
 					unless eval(response["is_admin"].to_s)
 						user = ::User.find(response["user_id"].to_i)
 						unauthorized! unless user
