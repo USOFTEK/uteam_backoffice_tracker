@@ -111,8 +111,8 @@ class API < Grape::API
 
 		# Make year months ranges
 		def year_month_ranges year
-			from = Date.new(year, Time.now.month) - 1.year
-			to = Date.new(year, Time.now.month)
+			from = Date.new(year, Time.now.month, Time.now.beginning_of_month.day) - 1.year
+			to = Date.new(year, Time.now.month,  Time.now.end_of_month.day)
 			(from..to).group_by(&:month).map { |n,v| v.first.beginning_of_month.to_s..v.first.end_of_month.to_s }
 		end
 
