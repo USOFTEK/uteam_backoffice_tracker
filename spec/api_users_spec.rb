@@ -96,7 +96,7 @@ describe(Application) do
 
   it("should respond with user network statistics per month in weeks range") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: 9 }) do |c|
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: Time.now.month }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
         expect(response["netstats"]).to be_an(Array)
