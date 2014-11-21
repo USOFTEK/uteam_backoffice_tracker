@@ -135,14 +135,16 @@ module APIv1
 
 								params[:year] ||= Time.now.to_date.year
 
-								params[:year] = current_user.registration.year if params[:year] > current_user.registration.year
+								if params[:year] >= current_user.registration.year
 
-								ranges = params.has_key?(:month) ? month_weeks_ranges(params[:year], params[:month]) : year_month_ranges(params[:year])
+									ranges = params.has_key?(:month) ? month_weeks_ranges(params[:year], params[:month]) : year_month_ranges(params[:year])
 
-								ranges.each { |range|
-									records = current_user.network_activities.where(per: range)
-									to_object.push(OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), from: Date.parse(range.first).to_time.to_i, to: Date.parse(range.last).to_time.to_i }))
-								}
+									ranges.each { |range|
+										records = current_user.network_activities.where(per: range)
+										to_object.push(OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), from: Date.parse(range.first).to_time.to_i, to: Date.parse(range.last).to_time.to_i }))
+									}
+									
+								end
 							end
 							render_template("/api/v1/users/statistics/networks", to_object)
 							# render_template("/api/v1/users/statistics/networks", current_user.network_activities.where(per: from..to).order(per: :asc).group(:per))
