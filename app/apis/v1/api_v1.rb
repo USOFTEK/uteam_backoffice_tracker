@@ -129,7 +129,7 @@ module APIv1
 								params[:to] ||= Time.now.midnight.to_i
 								params[:from] ||= 0
 
-								to_object = current_user.network_activities.where(per: Time.at(params[:from]).to_s..Time.at(params[:to]).to_s).group(:per).order(created_at: :asc)
+								to_object = current_user.network_activities.where(per: Time.at(params[:from]).to_s..Time.at(params[:to]).to_s).group(:per).order(per: :asc)
 
 							else
 
