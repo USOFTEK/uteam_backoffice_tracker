@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
 
 	has_one(:mobile_phone, -> { where(is_mobile: true) }, class_name: "Phone", dependent: :destroy)
 
+	accepts_nested_attributes_for(:mobile_phone, reject_if: ->(attributes) { attributes[:number].to_s.scan(/^(\+?[38]{2}?0\d{9})/i).empty? })
+
 	has_one(:primary_phone, -> { where(is_main: true) }, class_name: "Phone", dependent: :destroy)
 
 	has_many(:network_activities, dependent: :destroy)
@@ -42,8 +44,6 @@ class User < ActiveRecord::Base
 
 	scope(:disabled, -> { where(disable: true) })
 	scope(:active, -> { where(disable: false) })
-
-	accepts_nested_attributes_for(:mobile_phone)
 
 	def chat_notifications_allowed?
 		chat_notification

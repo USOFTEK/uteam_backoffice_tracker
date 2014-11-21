@@ -8,7 +8,7 @@ describe(Application) do
   let(:api_options) { { :config => File.expand_path(File.join(File.dirname(__FILE__), "..", "config", "application.rb")) } }
   let(:token) { Faker::Internet.ip_v6_address.tr(":", "") }
   let(:custom_email) { Faker::Internet.email }
-  let(:custom_data) { { chat_notification: false, created_at: Time.now, "mobile_phone_attributes[number]" => Faker::PhoneNumber.cell_phone } }
+  let(:custom_data) { { chat_notification: false, created_at: Time.now, "mobile_phone_attributes[number]" => FactoryGirl.generate(:build_phone_number) } }
 
   before(:all) { @user = create(:user, password: user_password, network_activities_count: 100) }
 

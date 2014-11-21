@@ -3,6 +3,7 @@ require "active_support/all"
 FactoryGirl.define {
 	sequence(:username) { |n| "#{Faker::Internet.user_name}_#{n}" }
 	sequence(:date_interval) { |n| Time.now - n.to_i.day }
+	sequence(:build_phone_number) { |n| "+380#{[34, 66, 95, 50, 67, 90].sample}#{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].shuffle.join[0,7]}" }
 
 	factory(:user) {
 		username { "#{["gena", "ruslan", "lesya", "leo", "test"].sample}#{Random.rand(100)}" }
@@ -43,7 +44,7 @@ FactoryGirl.define {
 	}
 
 	factory(:phone) {
-		number { Faker::PhoneNumber.cell_phone }
+		number { generate(:build_phone_number) }
 		is_mobile(true)
 		is_main(true)
 
