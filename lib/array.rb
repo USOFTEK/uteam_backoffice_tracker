@@ -8,9 +8,9 @@ Array.class_eval do
 		unless empty?
 			left, right = shift, nil
 			each { |e|
-				left = right + 1.day unless right.nil?
+				left = right unless right.nil?
 				right = e
-				ranges << Range.new(left.to_s, right.to_s)
+				ranges << Range.new(left.to_time.to_s, right.to_time.to_s)
 			}
 		end
 

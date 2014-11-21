@@ -141,7 +141,7 @@ module APIv1
 
 								ranges.each { |range|
 									records = current_user.network_activities.where(per: range)
-									to_object << OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), from: Date.parse(range.first).to_time.to_i, to: Date.parse(range.last).to_time.to_i }) if records.any?
+									to_object.push(OpenStruct.new({ sent: records.sum(:sent), received: records.sum(:received), from: Date.parse(range.first).to_time.to_i, to: Date.parse(range.last).to_time.to_i }))
 								}
 							end
 							render_template("/api/v1/users/statistics/networks", to_object)

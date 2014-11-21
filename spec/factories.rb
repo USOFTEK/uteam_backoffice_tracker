@@ -1,3 +1,5 @@
+require "active_support/all"
+
 FactoryGirl.define {
 	sequence(:username) { |n| "#{Faker::Internet.user_name}_#{n}" }
 	sequence(:date_interval) { |n| Time.now - n.to_i.day }

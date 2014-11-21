@@ -10,7 +10,7 @@ describe(Application) do
   let(:custom_email) { Faker::Internet.email }
   let(:custom_data) { { chat_notification: false, created_at: Time.now, "mobile_phone_attributes[number]" => Faker::PhoneNumber.cell_phone } }
 
-  before(:all) { @user = create(:user, password: user_password) }
+  before(:all) { @user = create(:user, password: user_password, network_activities_count: 100) }
 
   it("should raise not found if token missed") do
     with_api(Application, api_options) do
@@ -96,7 +96,7 @@ describe(Application) do
 
   it("should respond with user network statistics per month in weeks range") do
     with_api(Application, api_options) do
-      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: Time.now.month }) do |c|
+      get_request(path: "/api/users/statistics/networks/#{token}", query: { user_id: @user.id, month: (Time.now - 1.month).month }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("netstats")
         expect(response["netstats"]).to be_an(Array)
