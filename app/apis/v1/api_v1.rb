@@ -313,4 +313,26 @@ module APIv1
 
 	end
 
+	# Users abonements
+	class Abonements < Grape::API
+
+		# version("v1", using: :path)
+
+		prefix("api")
+
+		params do
+			requires(:token, desc: "Session token.")
+		end
+		namespace(:abonements) do
+
+			desc("Display all groups.")
+			get("/:token") do
+				within_session {
+					render_template("/api/v1/abonements/index", Abonement.all)
+				}
+			end
+
+		end
+	end
+
 end
