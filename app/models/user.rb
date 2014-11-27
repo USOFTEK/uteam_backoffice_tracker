@@ -28,6 +28,8 @@ class User < ActiveRecord::Base
 
 	belongs_to(:tariff)
 
+  belongs_to(:group)
+
 	validates(:initials, presence: true)
 
 	validates(:username, uniqueness: true, presence: true)
