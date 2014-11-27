@@ -122,6 +122,7 @@ class API < Grape::API
 	mount(APIv1::Users)
 	mount(APIv1::Tariffs)
 	mount(APIv1::TVpackages)
+	mount(APIv1::Groups)
 
 	resource("/") do
 		namespace(:api) do

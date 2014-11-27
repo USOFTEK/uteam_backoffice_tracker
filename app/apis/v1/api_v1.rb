@@ -290,4 +290,27 @@ module APIv1
 
 	end
 
+	# Groups
+	class Groups < Grape::API
+
+		# version("v1", using: :path)
+
+		prefix("api")
+
+		params do
+			requires(:token, desc: "Session token.")
+		end
+		namespace(:groups) do
+
+			desc("Display all groups within admin session.")
+			get("/:token") do
+				within_session(true) {
+					render_template("/api/v1/groups/index", Group.all)
+				}
+			end
+
+		end
+
+	end
+
 end
