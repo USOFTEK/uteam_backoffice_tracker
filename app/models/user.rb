@@ -30,6 +30,9 @@ class User < ActiveRecord::Base
 
   belongs_to(:group)
 
+  has_many :abonement_users
+  has_many(:abonements, through: :abonement_users)
+
 	validates(:initials, presence: true)
 
 	validates(:username, uniqueness: true, presence: true)
