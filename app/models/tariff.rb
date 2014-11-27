@@ -3,6 +3,10 @@ require "active_record"
 class Tariff < ActiveRecord::Base
 
 	has_many(:users)
+
+	has_many(:tv_packages_tariffs)
+
+	has_many(:tv_packages, through: :tv_packages_tariffs)
 	
 	validates(:name, presence: true, uniqueness: true)
 
