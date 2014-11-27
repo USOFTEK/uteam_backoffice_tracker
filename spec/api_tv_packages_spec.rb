@@ -2,7 +2,7 @@ describe(Application) do
 
   let(:api_options) { { :config => File.expand_path(File.join(File.dirname(__FILE__), "..", "config", "application.rb")) } }
   let(:token) { Faker::Internet.ip_v6_address.tr(":", "") }
-  let(:package_params) { { name: Faker::Lorem.word, source: Faker::Internet.url, desciption: Faker::Lorem.sentence } }
+  let(:package_params) { { name: Faker::Lorem.words(2).join(" "), source: Faker::Internet.url, desciption: Faker::Lorem.sentence } }
   let(:package_update_params) { { description: Faker::Lorem.sentence, source: Faker::Internet.url } }
 
   before(:all) { @package = create(:tv_package) }
