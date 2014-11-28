@@ -33,7 +33,7 @@ module APIv1
 					within_session(true) {
 						tariff = Tariff.find(params[:id])
 						if params.has_key?(:tv_package_id)
-							tv = TvPackage.find(params[:tv_package_id])
+							tv = params[:tv_package_id].zero? ? nil : TvPackage.find(params[:tv_package_id])
 							tariff.tv_package = tv
 						end
 						tariff.save!
