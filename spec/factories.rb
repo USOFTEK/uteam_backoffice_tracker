@@ -21,8 +21,9 @@ FactoryGirl.define {
 		chat_notification(true)
 
 		tariff
-    group
 
+		group
+		
 		transient {
 			phones_count 5
 			network_activities_count 50

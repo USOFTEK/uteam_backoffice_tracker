@@ -50,6 +50,10 @@ class User < ActiveRecord::Base
 	scope(:disabled, -> { where(disable: true) })
 	scope(:active, -> { where(disable: false) })
 
+	def has_tv
+		!tariff.tv_package.nil? || abonements.with_tv.any?
+	end
+
 	def chat_notifications_allowed?
 		chat_notification
 	end
@@ -59,7 +63,7 @@ class User < ActiveRecord::Base
 	end
 
 	def authenticate pass
-		password == pass && group.authorizeble?
+		password == pass && group && group.authorizable?
 	end
 
 	def password
