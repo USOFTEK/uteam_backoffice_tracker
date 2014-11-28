@@ -37,8 +37,16 @@ module APIv1
 
 			desc("Load TV packages. Admin only!")
 			get("/:token") do
-				within_session(true) {
-					render_template("/api/v1/tvs/index", TvPackage.all)
+				within_session { |current_user|
+					if current_user.nil?
+						render_template("/api/v1/tvs/index", TvPackage.all)
+					else
+						tv_package = current_user.tariff.tv_package
+						tv_package = current_user.abonements.with_tv.first if current_user.abonements.with_tv.any?
+						grape_error!("TV package not found!", 400) if tv_package.nil?
+						playlist = retrieve_playlist(tv_package.source)
+						render_template("/api/v1/tvs/show", OpenStruct.new({ object: tv_package, playlist: playlist }))
+					end
 				}
 			end
 
@@ -62,17 +70,6 @@ module APIv1
 				requires(:id, type: Integer, desc: "TV package ID.")
 			end
 			route_param(:id) do
-				desc("Display TV package with playlist within user session.")
-				get("/:token") do
-					within_session(false) { |current_user|
-						tv_package = current_user.tariff.tv_package
-						tv_package = current_user.abonements.with_tv.first if current_user.abonements.with_tv.any?
-						grape_error!("TV package not found!", 400) if tv_package.nil?
-						playlist = retrieve_playlist(tv_package.source)
-						render_template("/api/v1/tvs/show", OpenStruct.new({ object: tv_package, playlist: playlist }))
-					}
-				end
-
 				desc("Delete package. Admin only!")
 				delete("/:token") do
 					within_session(true) {

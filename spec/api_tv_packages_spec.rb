@@ -20,15 +20,7 @@ describe(Application) do
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("tv_packages")
-      end
-    end
-  end
-
-  it("should raise permission denied if not is admin to view TV packages") do
-    with_api(Application, api_options) do
-      get_request(path: "/api/tv_packages/#{token}", query: { is_admin: false }) do |c|
-        response = JSON.parse(c.response)
-        expect(response).to have_key("error")
+        expect(response["tv_packages"]).to be_a_kind_of(Array)
       end
     end
   end
@@ -92,7 +84,7 @@ describe(Application) do
 
   it("should respond with user tv package and playlist") do
     with_api(Application, api_options) do
-      get_request(path: "/api/tv_packages/#{@user.tariff.tv_package.id}/#{token}", query: { user_id: @user.id } ) do |c|
+      get_request(path: "/api/tv_packages/#{token}", query: { user_id: @user.id } ) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("tv_package")
