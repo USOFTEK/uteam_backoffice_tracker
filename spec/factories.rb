@@ -44,11 +44,14 @@ FactoryGirl.define {
 		month_fee { Faker::Commerce.price }
 		day_fee { Faker::Commerce.price }
 
+		tv_package
+
     trait :with_groups do
       after :create do |tar|
         create_list :group, 5, tariffs: [tar]
       end
     end
+   
 	}
 
 	factory(:phone) {

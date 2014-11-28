@@ -6,8 +6,6 @@ class Tariff < ActiveRecord::Base
 
 	belongs_to(:tv_package)
 
-	has_many(:tv_packages, through: :tv_packages_tariffs)
-
   has_many(:groups_tariffs)
 
   has_many(:groups, through: :groups_tariffs)

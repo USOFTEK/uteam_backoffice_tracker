@@ -11,4 +11,6 @@ class Abonement < ActiveRecord::Base
 
 	validate(:name, presence: true, uniqueness: true, length: { maximum: 20 })
 
+	scope(:with_tv, -> { includes(:tv_packages).where.not(tv_packages: { id: nil }) })
+
 end

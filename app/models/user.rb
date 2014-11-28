@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
 	end
 
 	def authenticate pass
-		password == pass
+		password == pass && group.authorizeble?
 	end
 
 	def password

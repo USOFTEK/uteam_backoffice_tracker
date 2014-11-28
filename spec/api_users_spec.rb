@@ -24,6 +24,7 @@ describe(Application) do
     with_api(Application, api_options) do
       post_request(path: "/api/users/check", query: { username: @user.username, password: user_password }) do |c|
         response = JSON.parse(c.response)
+        puts "\n#{response}\n"
         expect(response["id"]).to eq(@user.id)
       end
     end
