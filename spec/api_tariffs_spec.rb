@@ -16,11 +16,12 @@ describe(Application) do
   end
 
   it("should respond with tariffs list to user") do
+    @tariffs = create_list(:tariff, 5, groups: [user.group])
     with_api(Application, api_options) do
       get_request(path: "/api/tariffs/#{token}", query: { user_id: user.id }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("tariffs")
-        expect(response["tariffs"].count).to eq(Tariff.count)
+        expect(response["tariffs"].count).to eq(@tariffs.count)
       end
     end
   end
