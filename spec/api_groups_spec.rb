@@ -12,6 +12,7 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/groups/#{token}", query: { is_admin: false }) do |c|
         response = JSON.parse(c.response)
+        p response
         expect(response).to have_key("error")
         expect(response["error"]).to be_truthy
         expect(response["status"]).to eq(401)
@@ -19,10 +20,11 @@ describe(Application) do
     end
   end
 
-  it("should display group within admin session") do
+  it("should display group with tariffs in admin session") do
     with_api(Application, api_options) do
       get_request(path: "/api/groups/#{token}", query: { is_admin: true }) do |c|
         response = JSON.parse(c.response)
+        p response
         expect(response).not_to have_key("error")
         expect(response).to have_key("groups")
         expect(response["groups"].size).to eq(@groups.size)

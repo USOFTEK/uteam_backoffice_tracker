@@ -1,6 +1,11 @@
 require "rubygems"
 require "active_support/all"
 
+require "roar"
+require "roar/representer"
+require "roar/representer/json"
+require "grape-roar"
+
 # Load app
 Dir.glob("#{File.join(File.dirname(__FILE__), "..")}/**/*.rb").each { |f| require f }
 
@@ -123,7 +128,6 @@ class API < Grape::API
 	mount(APIv1::Tariffs)
 	mount(APIv1::TVpackages)
 	mount(APIv1::Groups)
-	mount(APIv1::Abonements)
 
 	resource("/") do
 		namespace(:api) do

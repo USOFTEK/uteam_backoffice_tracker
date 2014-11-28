@@ -7,12 +7,6 @@ module APIv1
 
 		# version("v1", using: :path)
 
-		helpers {
-			def tariff_params
-				params.permit(:tv_package_id)
-			end
-		}
-
 		prefix("api")
 
 		resource("tariffs") do
@@ -38,7 +32,10 @@ module APIv1
 				put("/:token") do
 					within_session(true) {
 						tariff = Tariff.find(params[:id])
-						tariff.assign_attributes(tariff_params)
+						if params.has_key?(:tv_package_id)
+							tv = TvPackage.find(params[:tv_package_id])
+							tariff.tv_package = tv
+						end
 						tariff.save!
 					}
 				end
