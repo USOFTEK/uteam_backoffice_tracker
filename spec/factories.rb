@@ -43,6 +43,11 @@ FactoryGirl.define {
 		month_fee { Faker::Commerce.price }
 		day_fee { Faker::Commerce.price }
 
+    trait :with_groups do
+      after :create do |tar|
+        create_list :groups, 5, tariffs: [tar]
+      end
+    end
 	}
 
 	factory(:phone) {
@@ -113,6 +118,12 @@ FactoryGirl.define {
 		id { generate(:id) }
 		name { generate(:uniq_name) }
 		description { Faker::Lorem.sentence }
+
+    trait :groups do
+      after :create do |gr|
+        create_list :tariffs, 5, groups: [fc]
+      end
+    end
 	}
 
 	factory(:abonement) {

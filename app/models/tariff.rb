@@ -4,9 +4,15 @@ class Tariff < ActiveRecord::Base
 
 	has_many(:users)
 
-	belongs_to(:tv_package, dependent: :nulify)
+	belongs_to(:tv_package)
 
 	has_many(:tv_packages, through: :tv_packages_tariffs)
+
+  has_many(:groups_tariffs)
+
+  has_many(:groups, through: :groups_tariffs)
+
+  validates(:name, presence: true, uniqueness: true)
 
 	validates(:name, presence: true, uniqueness: true)
 

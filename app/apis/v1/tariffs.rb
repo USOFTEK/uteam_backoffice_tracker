@@ -33,7 +33,7 @@ module APIv1
 			route_param(:id) do
 				desc("Update tariff.")
 				params do
-					optional(:tv_package_id, allow_blank: true, type: Integer, desc: "TV package id.")
+					optional(:tv_package_id, type: Integer, desc: "TV package id.")
 				end
 				put("/:token") do
 					within_session(true) {

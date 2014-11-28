@@ -6,6 +6,10 @@ gem "goliath"
 # Grape REST-like api
 gem "grape"
 
+gem "roar"
+
+gem "grape-roar"
+
 # Mysql2
 gem "mysql2"
 
@@ -19,7 +23,7 @@ gem "railties"
 gem "rack-fiber_pool",  require: "rack/fiber_pool"
 
 # EM Synchrony
-gem "em-synchrony", git: "git://github.com/igrigorik/em-synchrony.git", require: ["em-synchrony", "em-synchrony/activerecord"]
+gem "em-synchrony", require: ["em-synchrony", "em-synchrony/activerecord"]
 
 # EM Synchrony HttpRequest
 gem "em-http-request"
