@@ -77,6 +77,20 @@ describe(Application) do
     end
   end
 
+  it("empties group tariffs") do
+    @the_group = @groups.first
+    with_api(Application, api_options) do
+      put_request(path: "/api/groups/#{@the_group.id}",
+                  query: { is_admin: true, token: "12345", has_no_tariffs: true }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).not_to have_key("error")
+        expect(response).to have_key("ok")
+        new_tariffs = Group.find(@the_group.id).tariffs
+        expect(new_tariffs.length).to eq 0
+      end
+    end
+  end
+
   it("updates group auth data") do
     @the_group = @groups.first
     with_api(Application, api_options) do
