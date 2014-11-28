@@ -55,7 +55,7 @@ module APIv1
 					requires(:name, type: String, desc: "TV package name.")
 					requires(:source, type: String, desc: "Package play list source url.")
 					optional(:description, type: String, desc: "TV package description.")
-					optional(:abonement, allow_blank: true, type: Integer, desc: "Abonement id.")
+					optional(:abonement, type: Integer, desc: "Abonement id.")
 				end
 				put("/:token") do
 					within_session(true) {

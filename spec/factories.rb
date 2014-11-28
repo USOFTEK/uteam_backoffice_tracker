@@ -43,6 +43,8 @@ FactoryGirl.define {
 		month_fee { Faker::Commerce.price }
 		day_fee { Faker::Commerce.price }
 
+		tv_package
+
 	}
 
 	factory(:phone) {

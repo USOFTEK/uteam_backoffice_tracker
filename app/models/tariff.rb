@@ -4,7 +4,7 @@ class Tariff < ActiveRecord::Base
 
 	has_many(:users)
 
-	belongs_to(:tv_package, dependent: :nulify)
+	belongs_to(:tv_package)
 
 	has_many(:tv_packages, through: :tv_packages_tariffs)
 
