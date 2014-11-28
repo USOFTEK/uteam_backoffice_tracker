@@ -1,5 +1,4 @@
 module Presenters
-  module GroupPresenter
     module TariffPresenter
       include Roar::Representer::JSON
       include Roar::Representer::Feature::Hypermedia
@@ -11,8 +10,8 @@ module Presenters
       property :day_fee
       property :created_at
 
-      collection :entries, extend: GroupPresenter, as: :groups, embedded: true,
-                 getter: lambda { |args| self.groups if args[:with_groups] }
+      # collection :entries, extend: GroupPresenter, as: :groups, embedded: true,
+      #            getter: lambda { |args| self.groups if args[:with_groups] }
     end
 
     module TariffsPresenter
@@ -23,24 +22,25 @@ module Presenters
       collection :entries, extend: TariffsPresenter, as: :tariffs, embedded: true
     end
 
-    include Roar::Representer::JSON
-    include Roar::Representer::Feature::Hypermedia
-    include Grape::Roar::Representer
+    module GroupPresenter
+      include Roar::Representer::JSON
+      include Roar::Representer::Feature::Hypermedia
+      include Grape::Roar::Representer
 
-    property :id
-    property :name
-    property :description
-    collection :entries, extend: TariffPresenter, as: :tariffs, embedded: true,
-               getter: lambda { |args| self.tariffs if args[:with_tariffs] }
+      property :id
+      property :name
+      property :description
+      collection :entries, extend: TariffPresenter, as: :tariffs, embedded: true,
+                 getter: lambda { |args| self.tariffs if args[:with_tariffs] }
+
+    end
+
+    module GroupsPresenter
+      include Roar::Representer::JSON
+      include Roar::Representer::Feature::Hypermedia
+      include Grape::Roar::Representer
+
+      collection :entries, extend: GroupPresenter, as: :groups, embedded: true
+    end
 
   end
-
-  module GroupsPresenter
-    include Roar::Representer::JSON
-    include Roar::Representer::Feature::Hypermedia
-    include Grape::Roar::Representer
-
-    collection :entries, extend: GroupPresenter, as: :groups, embedded: true
-  end
-
-end
