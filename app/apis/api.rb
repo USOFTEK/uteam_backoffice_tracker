@@ -35,7 +35,7 @@ class API < Grape::API
 	rescue_from(ActiveRecord::RecordNotFound) { |e|
 		Rack::Response.new({
 			error: true,
-			message: "Authentication failue!",
+			message: "Record not found!",
 			status: 401
 		}.to_json, 401).finish
 	}

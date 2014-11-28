@@ -10,7 +10,7 @@ describe(Application) do
 
   it("should raise permission denied on GET groups if not is admin") do
     with_api(Application, api_options) do
-      get_request(path: "/api/groups", query: { is_admin: false, token: "12345" }) do |c|
+      get_request(path: "/api/groups", query: { is_admin: false, token: token }) do |c|
         response = JSON.parse(c.response)
         expect(response).to have_key("error")
         expect(response["error"]).to be_truthy
@@ -21,38 +21,33 @@ describe(Application) do
 
   it("should display groups with tariffs in admin session") do
     with_api(Application, api_options) do
-      get_request(path: "/api/groups", query: { is_admin: true, token: "12345" }) do |c|
+      get_request(path: "/api/groups", query: { is_admin: true, token: token }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("groups")
-        expect(response["groups"].size).to eq(@groups.size)
-        expect(response["groups"][0]["tariffs"].length).to eq @groups.first.tariffs.length
+        expect(response["groups"]).to be_kind_of(Array)
       end
     end
   end
 
   it("should display groups without tariffs in admin session") do
     with_api(Application, api_options) do
-      get_request(path: "/api/groups", query: { is_admin: true, token: "12345", with_tariffs: false }) do |c|
+      get_request(path: "/api/groups", query: { is_admin: true, token: token, with_tariffs: false }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("groups")
-        expect(response["groups"].size).to eq(@groups.size)
-        expect(response["groups"][0]["tariffs"]).to be nil
+        expect(response["groups"]).to be_kind_of(Array)
       end
     end
   end
 
   it("displays certain group with tariffs in admin session") do
     with_api(Application, api_options) do
-      get_request(path: "/api/groups/#{@groups.last.id}", query: { is_admin: true, token: "12345" }) do |c|
+      get_request(path: "/api/groups/#{@groups.last.id}", query: { is_admin: true, token: token }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("groups")
-        expect(response["groups"].size).to eq 1
-        expect(response["groups"][0]["tariffs"].length).to eq @groups.last.tariffs.length
-        expect(response["groups"][0]["name"]).to eq @groups.last.name
-        expect(response["groups"][0]["can_authorize"]).to eq true
+        expect(response["groups"]).to be_kind_of(Hash)
       end
     end
   end
@@ -65,7 +60,7 @@ describe(Application) do
     @tariff_ids += @new_tariffs.map &:id
     with_api(Application, api_options) do
       put_request(path: "/api/groups/#{@the_group.id}",
-                  query: { is_admin: true, token: "12345", tariffs: @tariff_ids }) do |c|
+                  query: { is_admin: true, token: token, tariffs: @tariff_ids }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("ok")
@@ -77,11 +72,24 @@ describe(Application) do
     end
   end
 
+  it("empties group tariffs") do
+    @the_group = @groups.first
+    with_api(Application, api_options) do
+      put_request(path: "/api/groups/#{@the_group.id}",
+                  query: { is_admin: true, token: token, has_no_tariffs: true }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).not_to have_key("error")
+        expect(response).to have_key("ok")
+        expect(Group.find(@the_group.id).tariffs.size).to eq 0
+      end
+    end
+  end
+
   it("updates group auth data") do
     @the_group = @groups.first
     with_api(Application, api_options) do
       put_request(path: "/api/groups/#{@the_group.id}",
-                  query: { is_admin: true, token: "12345", can_authorize: false }) do |c|
+                  query: { is_admin: true, token: token, can_authorize: false }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("ok")
