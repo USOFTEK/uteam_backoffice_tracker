@@ -22,6 +22,8 @@ FactoryGirl.define {
 
 		tariff
 
+		group
+		
 		transient {
 			phones_count 5
 			network_activities_count 50

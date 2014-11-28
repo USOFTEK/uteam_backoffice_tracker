@@ -13,7 +13,7 @@ class Group < ActiveRecord::Base
 
 	validate(:description, length: { maximum: 200 })
 
-	def authorizeble?
+	def authorizable?
 		can_authorize
 	end
 
