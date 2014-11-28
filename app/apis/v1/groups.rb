@@ -1,6 +1,5 @@
 require "rubygems"
 require "active_support/all"
-require File.join(File.dirname(__FILE__), "..", "..", "presenters", "group_tariff_repr.rb")
 
 module APIv1
 	class Groups < Grape::API
@@ -19,7 +18,7 @@ module APIv1
 			get ["/", "/:id"] do
 				within_session(true) do
           q = params[:id] ? { id: params[:id] } : {}
-					Group.where(q).extend(Presenters::GroupsPresenter).to_hash with_tariffs: params[:with_tariffs]
+					(Group.where(q).extend(Presenters::GroupsPresenter).to_hash(with_tariffs: params[:with_tariffs])).to_json
 				end
       end
 
