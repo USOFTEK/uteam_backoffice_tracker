@@ -60,7 +60,7 @@ describe(Application) do
     @tariff_ids += @new_tariffs.map &:id
     with_api(Application, api_options) do
       put_request(path: "/api/groups/#{@the_group.id}",
-                  query: { is_admin: true, token: token, tariffs: @tariff_ids }) do |c|
+                  query: { is_admin: true, token: token, tariffs: @tariff_ids.to_json }) do |c|
         response = JSON.parse(c.response)
         expect(response).not_to have_key("error")
         expect(response).to have_key("ok")

@@ -1,5 +1,6 @@
 require "rubygems"
 require "active_support/all"
+require "json"
 
 module APIv1
 	class Groups < Grape::API
@@ -40,7 +41,7 @@ module APIv1
         desc("Update group data.")
         params do
           requires :id, type: String, desc: "Group id"
-          optional :tariffs, type: Array, desc: "Array of tariff ids to be associated with group"
+          optional :tariffs, type: String, desc: "Array of tariff ids to be associated with group"
           optional :has_no_tariffs, type: Boolean, desc: "If set to true, will empty group's associations with any tariffs"
           optional :can_authorize, type: Boolean
           mutually_exclusive :tariffs, :has_no_tariffs
@@ -50,6 +51,7 @@ module APIv1
             group = Group.find(params[:id])
             _ = params.delete :id
             if params[:tariffs]
+              params[:tariffs] = JSON.parse params[:tariffs]
               old_tariffs = group.tariffs.map(&:id)
               unless old_tariffs.sort == params[:tariffs].sort
                 params[:tariffs] = Tariff.find(params[:tariffs]) unless params[:tariffs].empty?
