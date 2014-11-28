@@ -30,6 +30,7 @@ module Presenters
       property :id
       property :name
       property :description
+      property :can_authorize
       collection :entries, extend: TariffPresenter, as: :tariffs, embedded: true,
                  getter: lambda { |args| self.tariffs if args[:with_tariffs] }
 

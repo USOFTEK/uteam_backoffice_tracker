@@ -19,7 +19,7 @@ describe(Application) do
     end
   end
 
-  it("should display group with tariffs in admin session") do
+  it("should display groups with tariffs in admin session") do
     with_api(Application, api_options) do
       get_request(path: "/api/groups", query: { is_admin: true, token: "12345" }) do |c|
         response = JSON.parse(c.response)
@@ -31,7 +31,7 @@ describe(Application) do
     end
   end
 
-  it("should display group without tariffs in admin session") do
+  it("should display groups without tariffs in admin session") do
     with_api(Application, api_options) do
       get_request(path: "/api/groups", query: { is_admin: true, token: "12345", with_tariffs: false }) do |c|
         response = JSON.parse(c.response)
@@ -39,6 +39,20 @@ describe(Application) do
         expect(response).to have_key("groups")
         expect(response["groups"].size).to eq(@groups.size)
         expect(response["groups"][0]["tariffs"]).to be nil
+      end
+    end
+  end
+
+  it("displays certain group with tariffs in admin session") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/groups/#{@groups.last.id}", query: { is_admin: true, token: "12345" }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).not_to have_key("error")
+        expect(response).to have_key("groups")
+        expect(response["groups"].size).to eq 1
+        expect(response["groups"][0]["tariffs"].length).to eq @groups.last.tariffs.length
+        expect(response["groups"][0]["name"]).to eq @groups.last.name
+        expect(response["groups"][0]["can_authorize"]).to eq true
       end
     end
   end
