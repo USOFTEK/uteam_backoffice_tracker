@@ -5,6 +5,7 @@ require "roar"
 require "roar/representer"
 require "roar/representer/json"
 require "grape-roar"
+require File.join(File.dirname(__FILE__), "..", "presenters", "group_tariff_repr.rb")
 
 # Load app
 Dir.glob("#{File.join(File.dirname(__FILE__), "..")}/**/*.rb").each { |f| require f }

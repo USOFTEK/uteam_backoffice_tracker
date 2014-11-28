@@ -47,7 +47,7 @@ FactoryGirl.define {
 
     trait :with_groups do
       after :create do |tar|
-        create_list :groups, 5, tariffs: [tar]
+        create_list :group, 5, tariffs: [tar]
       end
     end
    
@@ -122,9 +122,9 @@ FactoryGirl.define {
 		name { generate(:uniq_name) }
 		description { Faker::Lorem.sentence }
 
-    trait :groups do
+    trait :with_tariffs do
       after :create do |gr|
-        create_list :tariffs, 5, groups: [fc]
+        create_list :tariff, 5, groups: [gr]
       end
     end
 	}
