@@ -1,5 +1,7 @@
 require "rubygems"
 require "active_support/all"
+require "open-uri"
+require "ostruct"
 
 module APIv1
 
@@ -7,6 +9,23 @@ module APIv1
 	class TVpackages < Grape::API
 
 		# version("v1", using: :path)
+
+		helpers {
+			def retrieve_playlist filename_or_uri
+				playlist = Array.new
+				file = open(filename_or_uri) { |io| io.read } rescue ""
+				unless file.empty?
+					lines = file.split("\n")
+					lines.shift
+					while(!lines.empty?) do
+						extinf = lines.shift
+						stream = lines.shift
+						playlist << { name: File.basename(stream), description: extinf.split(",").last, stream: stream }
+					end
+				end
+				playlist
+			end
+		}
 
 		prefix("api")
 
@@ -43,15 +62,16 @@ module APIv1
 				requires(:id, type: Integer, desc: "TV package ID.")
 			end
 			route_param(:id) do
-				# desc("Display TV package with playlist within user session.")
-				# get("/token") do
-				# 	within_session(false) { |current_user|
-				# 		tv_package = current_user.tariff.tv_package
-				# 		tv_package = current_user.abonements.with_tv.first if current_user.abonements.with_tv.any?
-				# 		grape_error!("TV package not found!", 400) if tv_package.nil?
-						
-				# 	}
-				# end
+				desc("Display TV package with playlist within user session.")
+				get("/:token") do
+					within_session(false) { |current_user|
+						tv_package = current_user.tariff.tv_package
+						tv_package = current_user.abonements.with_tv.first if current_user.abonements.with_tv.any?
+						grape_error!("TV package not found!", 400) if tv_package.nil?
+						playlist = retrieve_playlist(tv_package.source)
+						render_template("/api/v1/tvs/show", OpenStruct.new({ object: tv_package, playlist: playlist }))
+					}
+				end
 
 				desc("Delete package. Admin only!")
 				delete("/:token") do
