@@ -17,10 +17,11 @@ module APIv1
 				unless file.empty?
 					lines = file.split("\n")
 					lines.shift
+					lines.pop
 					while(!lines.empty?) do
 						extinf = lines.shift
 						stream = lines.shift
-						playlist << { name: File.basename(stream), description: extinf.split(",").last, stream: stream }
+						playlist << { name: File.basename(stream).force_encoding("UTF-8"), description: extinf.split(",").last.force_encoding("UTF-8"), stream: stream.force_encoding("UTF-8") }
 					end
 				end
 				playlist
