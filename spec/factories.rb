@@ -21,7 +21,6 @@ FactoryGirl.define {
 		chat_notification(true)
 
 		tariff
-    group
 
 		group
 		
