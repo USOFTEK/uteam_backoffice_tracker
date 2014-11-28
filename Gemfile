@@ -6,10 +6,6 @@ gem "goliath"
 # Grape REST-like api
 gem "grape"
 
-gem "roar"
-
-gem "grape-roar"
-
 # Mysql2
 gem "mysql2"
 
