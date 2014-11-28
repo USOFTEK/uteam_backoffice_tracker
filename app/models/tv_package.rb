@@ -2,8 +2,7 @@ require "active_record"
 
 class TvPackage < ActiveRecord::Base
 
-	has_many(:tv_packages_tariffs)
-	has_many(:tariffs, through: :tv_packages_tariffs)
+	has_many(:tariffs)
 
 	has_many(:tv_packages_abonements)
 	has_many(:abonements, through: :tv_packages_abonements)

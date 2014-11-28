@@ -10,5 +10,5 @@ class CreateAbonementsTable < ActiveRecord::Migration
 		}
 		add_index(:abonements, :id)
 		add_index(:abonements, :name, unique: true)
-	end	
+	end
 end

@@ -7,6 +7,12 @@ module APIv1
 
 		# version("v1", using: :path)
 
+		helpers {
+			def tariff_params
+				params.permit(:tv_package_id)
+			end
+		}
+
 		prefix("api")
 
 		resource("tariffs") do
@@ -27,17 +33,14 @@ module APIv1
 			route_param(:id) do
 				desc("Update tariff.")
 				params do
-					optional(:package, allow_blank: true, type: Integer, desc: "TV package id.")
+					optional(:tv_package_id, allow_blank: true, type: Integer, desc: "TV package id.")
 				end
 				put("/:token") do
-					tariff = Tariff.find(params[:id])
-					if params.has_key?(:package)
-						if params[:package].empty?
-							tariff.tv_packages_tariffs.destroy
-						else
-							tariff.tv_packages_tariffs.first_or_create.update_attributes(tv_package_id: params[:package])
-						end
-					end
+					within_session(true) {
+						tariff = Tariff.find(params[:id])
+						tariff.assign_attributes(tariff_params)
+						tariff.save!
+					}
 				end
 			end
 		end

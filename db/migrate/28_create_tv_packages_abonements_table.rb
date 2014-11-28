@@ -5,8 +5,6 @@ class CreateTvPackagesAbonementsTable < ActiveRecord::Migration
 			t.belongs_to(:abonement)
 			t.timestamps
 		}
-		add_index(:abonements, :tv_package)
-		add_index(:abonements, :abonement)
-		add_index(:abonements, [:abonement, :tv_package])
+		add_index(:tv_packages_abonements, :abonement_id)
 	end
 end
