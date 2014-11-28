@@ -29,33 +29,22 @@ module APIv1
 				end
       end
 
-      desc "Update tariffs in group"
-      params do
-        requires :tariff_ids, type: Array, desc: "Array of tariff ids to be associated with group"
-        requires :id, type: String, desc: "Group id"
-      end
-      put "/:id/tariffs" do
-        within_session(true) do
-          group = Group.find(params[:id])
-          old_tariffs = group.tariffs.map(&:id)
-          if old_tariffs.sort == params[:tariff_ids].sort
-            { ok: true }.to_json
-          else
-            group.tariffs = params[:tariff_ids].empty? ? [] : Tariff.find(params[:tariff_ids])
-            grape_error!(400, group.errors.full_messages.join("; ")) unless group.save
-            { ok: true }.to_json
-          end
-        end
-      end
-
       desc "Update group data"
       params do
         requires :id, type: String, desc: "Group id"
-        requires :can_authorize, type: Boolean
+        optional :tariffs, type: Array, desc: "Array of tariff ids to be associated with group"
+        optional :can_authorize, type: Boolean
       end
       put "/:id" do
         within_session(true) do
           group = Group.find(params[:id])
+          _ = params.delete :id
+          if params[:tariffs]
+            old_tariffs = group.tariffs.map(&:id)
+            unless old_tariffs.sort == params[:tariffs].sort
+              params[:tariffs] = Tariff.find(params[:tariffs]) unless params[:tariffs].empty?
+            end
+          end
           grape_error!(400, group.errors.full_messages.join("; ")) unless group.update(permitted_params)
           { ok: true }.to_json
         end
