@@ -23,6 +23,7 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/groups", query: { is_admin: true, token: token }) do |c|
         response = JSON.parse(c.response)
+        puts "\n#{response}\n"
         expect(response).not_to have_key("error")
         expect(response).to have_key("groups")
         expect(response["groups"]).to be_kind_of(Array)
