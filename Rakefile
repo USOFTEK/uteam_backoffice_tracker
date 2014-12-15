@@ -72,12 +72,22 @@ namespace(:db) do
 
   desc("Load seeds")
   task(:seed => ["db:clean"]) do
+    # Build options
+    options = Array.new
+    # Count records for create_list
     ENV["NUMB"] ||= 1.to_s
+    options.push(ENV["NUMB"].to_i)
+    # Create with team?
+    options.push(:with_team) if ENV.has_key?("with_team")
+    # Set password
     ENV["password"] ||= "my_temp_password"
+    options.push(password: ENV["password"])
+    # Generating
     Rake::Task["db:abort_if_pending_migrations"].invoke
     Dir.glob("#{File.dirname(__FILE__)}/app/models/*.rb").each { |m| require m }
     FactoryGirl.reload
-    FactoryGirl.create_list(:user, ENV["NUMB"].to_i, password: ENV["password"])
+    FactoryGirl.create_list(:user, *options)
+    # FactoryGirl.create_list(:user, ENV["NUMB"].to_i, :with_team, password: ENV["password"])
   end
 
 end

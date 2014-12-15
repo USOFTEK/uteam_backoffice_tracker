@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
 	include ActiveRecord::Diff
 
 	has_paper_trail
-	
+
 	has_one(:billing, dependent: :destroy)
 
 	# has_many(:phones, dependent: :destroy)
@@ -21,17 +21,24 @@ class User < ActiveRecord::Base
 	has_one(:primary_phone, -> { where(is_main: true) }, class_name: "Phone", dependent: :destroy)
 
 	has_many(:network_activities, dependent: :destroy)
-	
+
 	delegate(:payments, to: :billing, allow_nil: true)
 
 	delegate(:fees, to: :billing, allow_nil: true)
 
 	belongs_to(:tariff)
 
-  belongs_to(:group)
+	belongs_to(:group)
 
-  has_many :abonement_users
-  has_many(:abonements, through: :abonement_users)
+	has_many(:abonement_users)
+
+	has_many(:abonements, through: :abonement_users)
+
+	has_many(:teams)
+
+	has_many(:friends, through: :teams)
+
+	has_many(:bonus_pays)
 
 	validates(:initials, presence: true)
 
@@ -48,6 +55,7 @@ class User < ActiveRecord::Base
 	validates(:registration, presence: true)
 
 	scope(:disabled, -> { where(disable: true) })
+
 	scope(:active, -> { where(disable: false) })
 
 	def has_tv
@@ -97,6 +105,14 @@ class User < ActiveRecord::Base
 
 	def self.available_fields disallowed = []
 		Hash[public_fields.map { |f| [f, !disallowed.include?(f.to_s)] }] rescue {}
+	end
+
+	def bonuses
+		friends.map(&:dillered).inject { |sum,x| sum + x }.round(2)
+	end
+
+	def dillered
+		bonus_pays.unpaid.sum(:amount).round(2)
 	end
 
 end

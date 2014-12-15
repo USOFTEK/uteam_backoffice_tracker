@@ -1,5 +1,7 @@
 require "rubygems"
+require "grape"
 require "active_support/all"
+require "ostruct"
 
 module APIv1
 	# Users
@@ -23,6 +25,16 @@ module APIv1
 					render_template("/api/v1/users/check", user)
 				end
 
+			end
+
+			# Bonuses
+			namespace(:bonuses) do
+				desc("Get user bonuses with team members.")
+				get("/:token") do
+					within_session(false) { |current_user|
+						render_template("/api/v1/users/bonuses", current_user)
+					}
+				end
 			end
 
 			namespace(:profile) do

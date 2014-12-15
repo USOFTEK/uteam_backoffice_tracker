@@ -10,7 +10,7 @@ describe(Application) do
   let(:custom_email) { Faker::Internet.email }
   let(:custom_data) { { chat_notification: false, created_at: Time.now, "mobile_phone_attributes[number]" => FactoryGirl.generate(:build_phone_number) } }
 
-  before(:all) { @user = create(:user, password: user_password, network_activities_count: 100) }
+  before(:all) { @user = create(:user, :with_team, password: user_password, network_activities_count: 100) }
 
   it("should raise not found if token missed") do
     with_api(Application, api_options) do
@@ -216,6 +216,19 @@ describe(Application) do
         response = JSON.parse(c.response)
         expect(response).to have_key("available")
         expect(response["available"].values.uniq).to contain_exactly(true)
+      end
+    end
+  end
+
+  it("should respond with user bonuses info") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/users/bonuses/#{token}", query: { user_id: @user.id }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("bonus_percent")
+        expect(response).to have_key("bonuses")
+        expect(response).to have_key("users")
+        expect(response["users"]).to be_kind_of(Array)
+        expect(response["users"].size).to eq(@user.friends.count)
       end
     end
   end

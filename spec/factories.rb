@@ -1,14 +1,16 @@
 require "active_support/all"
 
 FactoryGirl.define {
-	sequence(:username) { |n| "#{Faker::Internet.user_name}_#{n}" }
+	sequence(:username) { |n| "#{["gena", "ruslan", "lesya", "leo", "test"].sample}-#{n}" }
 	sequence(:date_interval) { |n| Time.now - n.to_i.day }
 	sequence(:build_phone_number) { |n| "+380#{[34, 66, 95, 50, 67, 90].sample}#{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].shuffle.join[0,7]}" }
 	sequence(:uniq_name) { |n| "#{Faker::Lorem.word}-#{n}" }
 	sequence(:id) { |n| n }
+	sequence(:date) { |n| Faker::Date.backward(n.to_i + 1) }
+	sequence(:amount) { |n| Faker::Commerce.price + n }
 
 	factory(:user) {
-		username { "#{["gena", "ruslan", "lesya", "leo", "test"].sample}#{Random.rand(100)}" }
+		username { generate(:username) }
 		ip { Faker::Internet.ip_v4_address }
 		email { Faker::Internet.safe_email }
 		initials { Faker::Name.name }
@@ -18,6 +20,7 @@ FactoryGirl.define {
 		netmask { Faker::Internet.ip_v4_address }
 		registration { Faker::Time.between(rand(366).day.ago, Time.now) }
 		speed { "#{Faker::Number.number(3)} Mb/s" }
+		bonus_percent { rand(10) }
 		chat_notification(true)
 
 		tariff
@@ -27,6 +30,8 @@ FactoryGirl.define {
 		transient {
 			phones_count 5
 			network_activities_count 50
+			bonus_pays_count 5
+			friends_count 3
 
 		}
 
@@ -36,6 +41,15 @@ FactoryGirl.define {
 			user.mobile_phone = create(:phone, user: user, is_mobile: true, is_main: false)
 			user.primary_phone = create(:phone, user: user, is_mobile: false, is_main: true)
 			user.network_activities << create_list(:network_activity, evaluator.network_activities_count, user: user)
+			user.bonus_pays << create_list(:bonus_pay, evaluator.bonus_pays_count, user: user)
+
+		}
+
+		trait(:with_team) {
+			after(:create) { |user,evaluator|
+				user.bonus_pays << create_list(:bonus_pay, evaluator.bonus_pays_count, user: user)
+				user.friends << create_list(:user, evaluator.friends_count, password: "user_password" )
+			}
 		}
 
 	}
@@ -47,12 +61,12 @@ FactoryGirl.define {
 
 		tv_package
 
-    trait :with_groups do
-      after :create do |tar|
-        create_list :group, 5, tariffs: [tar]
-      end
-    end
-   
+		trait(:with_groups) {
+			after(:create) { |tar|
+				create_list :group, 5, tariffs: [tar]
+			}
+		}
+
 	}
 
 	factory(:phone) {
@@ -73,14 +87,14 @@ FactoryGirl.define {
 			transient {
 				payments_count 5
 				fees_count 5
-				
+
 			}
 
 			after(:create) { |billing, evaluator|
-        create_list(:payment, evaluator.payments_count, billing: billing)
-        create_list(:fee, evaluator.fees_count, billing: billing)
+				create_list(:payment, evaluator.payments_count, billing: billing)
+				create_list(:fee, evaluator.fees_count, billing: billing)
 
-      }
+			}
 
 		}
 
@@ -124,11 +138,11 @@ FactoryGirl.define {
 		name { generate(:uniq_name) }
 		description { Faker::Lorem.sentence }
 
-    trait :with_tariffs do
-      after :create do |gr|
-        create_list :tariff, 5, groups: [gr]
-      end
-    end
+		trait(:with_tariffs) {
+			after(:create) { |gr|
+				create_list :tariff, 5, groups: [gr]
+			}
+		}
 	}
 
 	factory(:abonement) {
@@ -137,6 +151,12 @@ FactoryGirl.define {
 		period { rand(99) }
 		cost { Faker::Commerce.price }
 		payment_type { [true, false].sample }
+	}
+
+	factory(:bonus_pay) {
+		day { generate(:date) }
+		amount { generate(:amount) }
+		paid { false }
 	}
 
 }
