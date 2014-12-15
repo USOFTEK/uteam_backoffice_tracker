@@ -27,16 +27,6 @@ module APIv1
 
 			end
 
-			# Bonuses
-			namespace(:bonuses) do
-				desc("Get user bonuses with team members.")
-				get("/:token") do
-					within_session(false) { |current_user|
-						render_template("/api/v1/users/bonuses", current_user)
-					}
-				end
-			end
-
 			namespace(:profile) do
 				desc("Load user profile")
 				params do
@@ -122,6 +112,16 @@ module APIv1
 
 			end
 
+			# Bonuses
+			namespace(:bonuses) do
+				desc("Get user bonuses with team members.")
+				get("/:token") do
+					within_session(false) { |current_user|
+						render_template("/api/v1/users/bonuses", current_user)
+					}
+				end
+			end
+			
 			namespace(:statistics) do
 
 				namespace(:networks) do

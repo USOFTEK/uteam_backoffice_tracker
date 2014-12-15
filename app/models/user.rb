@@ -108,11 +108,11 @@ class User < ActiveRecord::Base
 	end
 
 	def bonuses
-		friends.map(&:dillered).inject { |sum,x| sum + x }.round(2)
+		friends.map(&:dillered).inject { |sum,x| sum + x }.round(2) rescue 0.0
 	end
 
 	def dillered
-		bonus_pays.unpaid.sum(:amount).round(2)
+		bonus_pays.unpaid.sum(:amount).round(2) rescue 0.0
 	end
 
 end
