@@ -23,12 +23,13 @@ Or
 
 ###### Optional:
 To use fake data
->		$ (RACK_ENV=production)* (NUMB=1)* (password=) rake db:seed
+>		$ (RACK_ENV=production)* (NUMB=1)* (with_team=true)* (password=) rake db:seed
 
 * - 
 RACK_ENV - by default :development
 NUMB - number of seeds by default 
 password - by default password is `my_temp_password`
+with_team - User friends (requires for bonus). Build Associations for user.friends of user.bonuses
 
 7. Start server:
 >		$ ruby application.rb -sv -p <port>
