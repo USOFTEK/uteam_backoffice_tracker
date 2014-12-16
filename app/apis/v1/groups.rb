@@ -15,7 +15,7 @@ module APIv1
     end
 
 		params do
-			requires(:token, desc: "Session token.")
+			requires :token, type: String, desc: "Session token."
 		end
 		namespace(:groups) do
 
@@ -53,7 +53,9 @@ module APIv1
             if params[:tariffs]
               params[:tariffs] = JSON.parse params[:tariffs]
               old_tariffs = group.tariffs.map(&:id)
-              unless old_tariffs.sort == params[:tariffs].sort
+              if old_tariffs.sort == params[:tariffs].sort
+                _ = params.delete :tariffs
+              else
                 params[:tariffs] = Tariff.find(params[:tariffs]) unless params[:tariffs].empty?
               end
             elsif params[:has_no_tariffs]
