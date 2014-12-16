@@ -50,19 +50,19 @@ module APIv1
           within_session(true) do
             group = Group.find(params[:id])
             _ = params.delete :id
+            tariff_hash = {}
             if params[:tariffs]
-              params[:tariffs] = JSON.parse params[:tariffs]
+              tariffs = JSON.parse params[:tariffs]
               old_tariffs = group.tariffs.map(&:id)
-              if old_tariffs.sort == params[:tariffs].sort
-                _ = params.delete :tariffs
-              else
-                params[:tariffs] = Tariff.find(params[:tariffs]) unless params[:tariffs].empty?
+              unless old_tariffs.sort == tariffs.sort
+                tariff_hash[:tariffs] = Tariff.find(tariffs) unless tariffs.empty?
               end
             elsif params[:has_no_tariffs]
               _ = params.delete :has_no_tariffs
-              params[:tariffs] = []
+              tariff_hash[:tariffs] = []
             end
-            grape_error!(400, group.errors.full_messages.join("; ")) unless group.update(permitted_params)
+            grape_error!(400, group.errors.full_messages.join("; ")) unless
+                group.update(permitted_params.except(:tariffs).merge(tariff_hash))
             { ok: true }.to_json
           end
 
