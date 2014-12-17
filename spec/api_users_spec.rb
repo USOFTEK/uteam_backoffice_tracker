@@ -233,4 +233,14 @@ describe(Application) do
     end
   end
 
+  it("raise permission denied for non user") do
+    with_api(Application, api_options) do
+      get_request(path: "/api/users/bonuses/#{token}", query: { is_admin: true }) do |c|
+        response = JSON.parse(c.response)
+        expect(response).to have_key("error")
+        expect(response["status"]).to eq(401)
+      end
+    end
+  end
+
 end

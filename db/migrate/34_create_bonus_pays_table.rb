@@ -1,6 +1,6 @@
 class CreateBonusPaysTable < ActiveRecord::Migration
 	def change
-		create_table(:bonus_pays, id: false) { |t|
+		create_table(:bonus_pays) { |t|
 			t.belongs_to(:user)
 			t.date(:day)
 			t.float(:amount, default: 0.0)

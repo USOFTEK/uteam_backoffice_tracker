@@ -56,7 +56,7 @@ class API < Grape::API
 				grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(params[:is_admin].to_s)
 				unless eval(params[:is_admin].to_s)
 					user = ::User.find(params[:user_id] || nil)
-					unauthorized! unless user
+					unauthorized! unless user || user.group.authorizable?
 				end
 				block.call(user) if block_given?
 			else
@@ -66,7 +66,7 @@ class API < Grape::API
 					grape_error!("Permission denied!", 401) if !rule.nil? && rule != eval(response["is_admin"].to_s)
 					unless eval(response["is_admin"].to_s)
 						user = ::User.find(response["user_id"].to_i)
-						unauthorized! unless user
+						unauthorized! unless user || user.group.authorizable?
 					end
 					block.call(user) if block_given?
 				end
