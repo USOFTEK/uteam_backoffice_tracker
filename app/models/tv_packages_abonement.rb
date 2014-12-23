@@ -6,6 +6,6 @@ class TvPackagesAbonement < ActiveRecord::Base
 
 	belongs_to(:abonement)
 
-	validate(:tv_package, presence: true)
+	validates(:tv_package, presence: true)
 
 end

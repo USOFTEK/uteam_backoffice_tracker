@@ -9,9 +9,9 @@ class Group < ActiveRecord::Base
 
 	has_many(:tariffs, through: :groups_tariffs)
 
-	validate(:name, presence: true, uniqueness: true, length: { maximum: 30 })
+	validates(:name, presence: true, uniqueness: true, length: { maximum: 30 })
 
-	validate(:description, length: { maximum: 200 })
+	validates(:description, length: { maximum: 200 })
 
 	def authorizable?
 		can_authorize
