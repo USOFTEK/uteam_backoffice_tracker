@@ -86,6 +86,7 @@ describe(Application) do
     with_api(Application, api_options) do
       get_request(path: "/api/tv_packages/#{token}", query: { user_id: @user.id } ) do |c|
         response = JSON.parse(c.response)
+        expect(response).to eq "abc"
         expect(response).not_to have_key("error")
         expect(response).to have_key("tv_package")
         expect(response).to have_key("playlist")

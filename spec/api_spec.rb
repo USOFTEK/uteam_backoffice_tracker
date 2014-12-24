@@ -14,7 +14,7 @@ describe(Application) do
   
   it("should respond with swagger doc") do
   	with_api(Application, api_options) do
-      get_request(path: "/docs") do |c|
+      get_request(path: "/api/docs") do |c|
         response = JSON.parse(c.response)
         expect(c.response_header.status).to eq(200)
         expect(response.count).not_to eq(0)
